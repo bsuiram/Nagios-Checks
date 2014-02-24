@@ -36,9 +36,9 @@ declare -a SUDO=( '/usr/bin/sudo' 'sudo' 'sudo' 'sudo' )
 dpkg_pkg () {
   # Takes 3 arguments;
   #  1) path from psudo_binary_name array element #1
-  #  2) package name from psudo_binary_name array elemant #1
+  #  2) package name from psudo_binary_name array determined by distribution ${index}
   #  3) binary name from psudo_binary_name array element #3
-  binary_path=${1:1:${#1}} #Remove first char from path.
+  binary_path=${1:1:${#1}} #Remove first char from path (/) as ${package_name}.md5sums contains path without starting /.
   package_name=${2}
   binary_name=${3}
 
@@ -62,14 +62,11 @@ dpkg_pkg () {
 rpm_pkg () {
   # Takes 3 arguments;
   #  1) path from psudo_binary_name array element #1
-  #  2) package name from psudo_binary_name array elemant #1
+  #  2) package name from psudo_binary_name array determined by distribution, ${index}
   #  3) binary name from psudo_binary_name array element #3
   binary_path=${1}
   package_name=${2}
   binary_name=${3}
-
-  echo "package_name   = ${package_name}"
-  echo "binary_path   = ${binary_path} (first char removed on purose)"
 
   if [ ${binary_md5sum} == ${package_md5sum} ]; then
     echo "Sucess!"
