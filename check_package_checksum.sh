@@ -63,12 +63,15 @@ rpm_pkg () {
   # Takes 3 arguments;
   #  1) path from psudo_binary_name array element #1
   #  2) package name from psudo_binary_name array determined by distribution, ${index}
-  #  3) binary name from psudo_binary_name array element #3
+  #  3) binary name from psudo_binary_name array element #3 (not used)
   binary_path=${1}
   package_name=${2}
   binary_name=${3}
 
-  if [ ${binary_md5sum} == ${package_md5sum} ]; then
+  package_sha256sum=$(/bin/rpm -ql --dump ${package_name} | /bin/grep "${binary_path}" | /bin/awk '{print $4}')
+  binary_sha256sum=$(/usr/bin/sha256sum ${binary_path} | /bin/awk '{print $1}')
+
+  if [ ${binary_sha256sum} == ${package_sha256sum} ]; then
     echo "Sucess!"
   else
     echo "WTF!?"
