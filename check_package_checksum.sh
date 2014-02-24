@@ -51,7 +51,6 @@ check_dpkg () {
   else
     return 1
   fi
-  echo
 }
 
 check_rpm () {
@@ -71,7 +70,6 @@ check_rpm () {
   else
     return 1
   fi
-  echo
 }
 
 # Check sums of binarys against package.
