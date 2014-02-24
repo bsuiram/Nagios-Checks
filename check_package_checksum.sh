@@ -69,12 +69,12 @@ check_rpm () {
   binary_name=${3}
 
   echo "package_name   = ${package_name}"
-  echo "binary_path   = ${binary_path} (first char removed on purose)"
+  echo "binary_path   = ${binary_path}"
 
-  package_sha256sum=$(/bin/rpm -ql --dump ${package_name} | /bin/grep "${binary_path}" | /bin/awk '{print $4}')
+  package_sha256sum=$(rpm -ql --dump ${package_name} | grep "${binary_path} " | awk '{print $4}')
   echo "package_sha256sum = ${package_sha256sum}"
-  
-  binary_sha256sum=$(/usr/bin/sha256sum ${binary_path} | /bin/awk '{print $1}')
+
+  binary_sha256sum=$(sha256sum ${binary_path} | awk '{print $1}')
   echo "binary_sha256sum = $binary_sha256sum"
 
   if [ ${binary_sha256sum} == ${package_sha256sum} ]; then
