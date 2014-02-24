@@ -101,16 +101,16 @@ do_checks () {
     ${pkgmgr} ${prog[0]} ${prog[${index}]} ${prog[3]}
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${prog[0]}
-      failed=${failed}+1
+      failed=$((failed+1))
       echo "ERROR: Package and binary checksum differs for ${prog[0]} in package \"${prog[${index}]}\"!"
     else
       not_failed_binarys[${not_failed}]=${prog[0]}
-      not_failed=${not_failed}+1
+      not_failed=$((not_failed+1))
     fi
   done
-
+  echo failed
   if [ ${failed} -ne 0 ]; then
-    echo "Error: Checksum verification of ${failed_binarys[@]} failed!"
+    echo "ERROR: Checksum verification of ${failed_binarys[@]} failed!"
     exit 1
   else
     echo "OK: Package and binary checksum are identical for ${not_failed_binarys[@]}."
