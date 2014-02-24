@@ -29,7 +29,7 @@ checks=( BASH SSHD LOGIN SU SUDO )
 # psudo_binary_name=( '/full/path/to/binary' 'deb-package-name' 'rpm-package-name' 'binary_name' )
 declare -a BASH=( '/bin/bash' 'bash' 'bash' 'bash' )
 declare -a SSHD=( '/usr/sbin/sshd' 'openssh-server' 'openssh-server' 'sshd' )
-declare -a LOGIN=( '/bin/login' 'login' 'util-linux' 'login' )
+declare -a LOGIN=( '/bin/login' 'login' 'util-linux-ng' 'login' )
 declare -a SU=( '/bin/su' 'login' 'coreutils' 'su' )
 declare -a SUDO=( '/usr/bin/sudo' 'sudo' 'sudo' 'sudo' )
 
