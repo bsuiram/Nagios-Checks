@@ -79,7 +79,7 @@ do_checks () {
   for element in ${checks[@]}; do
     eval "prog=(\${$element[@]})"
 
-    ${pkgmgr} ${prog[0]} ${prog[${index}]} ${prog[3]}
+    ${pkgmgr} ${prog[0]} ${prog[${index}]}
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${prog[0]}
       failed=$((failed+1))
