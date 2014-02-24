@@ -18,15 +18,16 @@ case ${distro} in
     ;;
 esac
 
-echo "We are running on ${distro}:"
-echo "  Using index [${index}] to resolve path to binary"
-echo "  and ${pkgmgr} as package manager."
+# I'll make a debug option
+#echo "We are running on ${distro}:"
+#echo "  Using index [${index}] to resolve path to binary"
+#echo "  and ${pkgmgr} as package manager."
 
-#  Array of psudo binary names to check
+#  Array of pseudo binary names to check
 checks=( BASH SSHD LOGIN SU SUDO )
 
 # Packages:
-# psudo_binary_name=( '/full/path/to/binary' 'deb-package-name' 'rpm-package-name' 'binary_name' )
+# pseudo_binary_name=( '/full/path/to/binary' 'deb-package-name' 'rpm-package-name' 'binary_name' )
 BASH=( '/bin/bash' 'bash' 'bash' 'bash' )
 SSHD=( '/usr/sbin/sshd' 'openssh-server' 'openssh-server' 'sshd' )
 LOGIN=( '/bin/login' 'login' 'util-linux-ng' 'login' )
@@ -34,13 +35,13 @@ SU=( '/bin/su' 'login' 'coreutils' 'su' )
 SUDO=( '/usr/bin/sudo' 'sudo' 'sudo' 'sudo' )
 
 check_dpkg () {
-  # Takes 3 arguments;
-  #  1) path from psudo_binary_name array element #1
-  #  2) package name from psudo_binary_name array determined by distribution ${index}
-  #  3) binary name from psudo_binary_name array element #3
+  # Takes 2 arguments;
+  #  1) path from pseudo_binary_name array element #1
+  #  2) package name from pseudo_binary_name array determined by distribution ${index}
+  #  3) binary name from pseudo_binary_name array element #3 (not used, remove)
   binary_path=${1:1:${#1}} #Remove first char from path (/) as ${package_name}.md5sums contains path without starting /.
   package_name=${2}
-  binary_name=${3}
+  #binary_name=${3} # Not used remove
 
   package_md5sum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${binary_path}$" | awk '{print $1}')
   binary_md5sum=$(md5sum /${binary_path} | awk '{print $1}')
@@ -54,13 +55,13 @@ check_dpkg () {
 }
 
 check_rpm () {
-  # Takes 3 arguments;
-  #  1) path from psudo_binary_name array element #1
-  #  2) package name from psudo_binary_name array determined by distribution, ${index}
-  #  3) binary name from psudo_binary_name array element #3 (not used)
+  # Takes 2 arguments;
+  #  1) path from pseudo_binary_name array element #1
+  #  2) package name from pseudo_binary_name array determined by distribution, ${index}
+  #  3) binary name from pseudo_binary_name array element #3 (not used)
   binary_path=${1}
   package_name=${2}
-  binary_name=${3}
+  #binary_name=${3} # Not used remove
 
   package_sha256sum=$(rpm -ql --dump ${package_name} | grep "${binary_path} " | awk '{print $4}')
   binary_sha256sum=$(sha256sum ${binary_path} | awk '{print $1}')
