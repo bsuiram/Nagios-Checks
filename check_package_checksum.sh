@@ -6,11 +6,11 @@ distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
 case ${distro} in
   Ubuntu|Debian )
     index=1
-    pkgmgr="dpkg"
+    pkgmgr="check_dpkg"
     ;;
   RedHat|CentOS|Scientific )
     index=2
-    pkgmgr="rpm"
+    pkgmgr="check_rpm"
     ;;
   * )
     echo "Unknown Distro: Please fix me.. im broken.."
@@ -33,7 +33,7 @@ declare -a LOGIN=( '/bin/login' 'login' 'util-linux' 'login' )
 declare -a SU=( '/bin/su' 'login' 'coreutils' 'su' )
 declare -a SUDO=( '/usr/bin/sudo' 'sudo' 'sudo' 'sudo' )
 
-dpkg_pkg () {
+check_dpkg () {
   # Takes 3 arguments;
   #  1) path from psudo_binary_name array element #1
   #  2) package name from psudo_binary_name array determined by distribution ${index}
@@ -59,7 +59,7 @@ dpkg_pkg () {
   echo
 }
 
-rpm_pkg () {
+check_rpm () {
   # Takes 3 arguments;
   #  1) path from psudo_binary_name array element #1
   #  2) package name from psudo_binary_name array determined by distribution, ${index}
@@ -68,8 +68,14 @@ rpm_pkg () {
   package_name=${2}
   binary_name=${3}
 
+  echo "package_name   = ${package_name}"
+  echo "binary_path   = ${binary_path} (first char removed on purose)"
+
   package_sha256sum=$(/bin/rpm -ql --dump ${package_name} | /bin/grep "${binary_path}" | /bin/awk '{print $4}')
+  echo "package_sha256sum = ${package_sha256sum}"
+  
   binary_sha256sum=$(/usr/bin/sha256sum ${binary_path} | /bin/awk '{print $1}')
+  echo "binary_sha256sum = $binary_sha256sum"
 
   if [ ${binary_sha256sum} == ${package_sha256sum} ]; then
     echo "Sucess!"
@@ -80,14 +86,14 @@ rpm_pkg () {
 }
 
 # Check packages
-check_pkg () {
+do_checks () {
   for element in ${checks[@]}; do
     eval "prog=(\${$element[@]})"
     echo "Checking ${prog[0]}"
-    #dpkg_pkg binary_path package_name binary_name
-    #dpkg_pkg ${prog[0]} ${prog[${index}]} ${prog[3]}
+    #${pkgmgr} binary_path package_name binary_name
+    ${pkgmgr} ${prog[0]} ${prog[${index}]} ${prog[3]}
   done
 }
 
-check_pkg
+do_checks
 
