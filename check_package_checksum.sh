@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Get distro and determine witch INDEX to use as package name
+# Get distro and determine witch element to use as package name
 distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
 
 case ${distro} in
@@ -34,9 +34,10 @@ declare -a SU=( '/bin/su' 'login' 'coreutils' 'su' )
 declare -a SUDO=( '/usr/bin/sudo' 'sudo' 'sudo' 'sudo' )
 
 dpkg_pkg () {
-  # Takes two arguments;
-  #  1) binary name from psudo_binary_name array element #3
-  #  2) binary path from psudo_binary_name array element #0
+  # Takes 3 arguments;
+  #  1) path from psudo_binary_name array element #1
+  #  2) package name from psudo_binary_name array elemant #1
+  #  3) binary name from psudo_binary_name array element #3
   binary_path=${1:1:${#1}} #Remove first char from path.
   package_name=${2}
   binary_name=${3}
@@ -58,13 +59,33 @@ dpkg_pkg () {
   echo
 }
 
+rpm_pkg () {
+  # Takes 3 arguments;
+  #  1) path from psudo_binary_name array element #1
+  #  2) package name from psudo_binary_name array elemant #1
+  #  3) binary name from psudo_binary_name array element #3
+  binary_path=${1}
+  package_name=${2}
+  binary_name=${3}
+
+  echo "package_name   = ${package_name}"
+  echo "binary_path   = ${binary_path} (first char removed on purose)"
+
+  if [ ${binary_md5sum} == ${package_md5sum} ]; then
+    echo "Sucess!"
+  else
+    echo "WTF!?"
+  fi
+  echo
+}
+
 # Check packages
 check_pkg () {
   for element in ${checks[@]}; do
     eval "prog=(\${$element[@]})"
     echo "Checking ${prog[0]}"
     #dpkg_pkg binary_path package_name binary_name
-    dpkg_pkg ${prog[0]} ${prog[${index}]} ${prog[3]}
+    #dpkg_pkg ${prog[0]} ${prog[${index}]} ${prog[3]}
   done
 }
 
