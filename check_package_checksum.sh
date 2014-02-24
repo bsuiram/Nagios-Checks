@@ -94,7 +94,7 @@ check_rpm () {
 do_checks () {
   failed=0
   for element in ${checks[@]}; do
-    #eval "prog=(\${$element[@]})"
+    eval "prog=(\${$element[@]})"
     #echo "Checking ${prog[0]}"
     #${pkgmgr} binary_path package_name binary_name
     ${pkgmgr} ${prog[0]} ${prog[${index}]} ${prog[3]}
