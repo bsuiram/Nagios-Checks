@@ -42,19 +42,21 @@ check_dpkg () {
   package_name=${2}
   binary_name=${3}
 
-  echo "package_name   = ${package_name}"
-  echo "binary_path   = ${binary_path} (first char removed on purose)"
+  #echo "package_name   = ${package_name}"
+  #echo "binary_path   = ${binary_path} (first char removed on purose)"
 
   package_md5sum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${binary_path}$" | awk '{print $1}')
-  echo "package_md5sum = ${package_md5sum}"
+  #echo "package_md5sum = ${package_md5sum}"
 
   binary_md5sum=$(md5sum /${binary_path} | awk '{print $1}')
-  echo "binary_md5sum = ${binary_md5sum}"
+  #echo "binary_md5sum = ${binary_md5sum}"
 
   if [ ${binary_md5sum} == ${package_md5sum} ]; then
-    echo "Sucess!"
+    # echo "Ok!"
+    return 0
   else
-    echo "WTF!?"
+    # echo "Signature verification failed!"
+    return 1
   fi
   echo
 }
@@ -68,33 +70,53 @@ check_rpm () {
   package_name=${2}
   binary_name=${3}
 
-  echo "package_name   = ${package_name}"
-  echo "binary_path   = ${binary_path}"
+  #echo "package_name   = ${package_name}"
+  #echo "binary_path   = ${binary_path}"
 
   package_sha256sum=$(rpm -ql --dump ${package_name} | grep "${binary_path} " | awk '{print $4}')
-  echo "rpm -ql --dump ${package_name} | grep "${binary_path} " | awk '{print $4}'"
-  echo "package_sha256sum = ${package_sha256sum}"
+  #echo "rpm -ql --dump ${package_name} | grep "${binary_path} " | awk '{print $4}'"
+  #echo "package_sha256sum = ${package_sha256sum}"
 
   binary_sha256sum=$(sha256sum ${binary_path} | awk '{print $1}')
-  echo "binary_sha256sum = $binary_sha256sum"
+  #echo "binary_sha256sum = $binary_sha256sum"
 
   if [ ${binary_sha256sum} == ${package_sha256sum} ]; then
-    echo "Sucess!"
+    # echo "Ok!"
+    return 0
   else
-    echo "WTF!?"
+    # echo "Signature verification failed!"
+    return 1
   fi
   echo
 }
 
 # Check packages
 do_checks () {
+  failed=0
   for element in ${checks[@]}; do
-    eval "prog=(\${$element[@]})"
-    echo "Checking ${prog[0]}"
+    #eval "prog=(\${$element[@]})"
+    #echo "Checking ${prog[0]}"
     #${pkgmgr} binary_path package_name binary_name
     ${pkgmgr} ${prog[0]} ${prog[${index}]} ${prog[3]}
+    if [ $? -ne 0 ]; then
+      failed_binarys[$failed]=${prog[0]}
+      failed=${failed}+1
+      echo "ERROR: Package and binary checksum differs for ${prog[0]} in package \"${prog[${index}]}\"!"
+    else
+      echo "OK: Package and binary checksums are identical for package \"${prog[${index}]}\"."
+    fi
   done
+
+  if [ ${failed} -ne 0 ]; then
+    echo "Error: Checksum verification of ${failed_binarys[@]} failed!"
+    exit 1
+  else
+    echo "OK: Package and binary checksum are identical."
+    exit 0
+  fi
 }
 
 do_checks
+
+
 
