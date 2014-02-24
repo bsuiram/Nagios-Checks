@@ -72,6 +72,7 @@ check_rpm () {
   echo "binary_path   = ${binary_path}"
 
   package_sha256sum=$(rpm -ql --dump ${package_name} | grep "${binary_path} " | awk '{print $4}')
+  echo "rpm -ql --dump ${package_name} | grep "${binary_path} " | awk '{print $4}'"
   echo "package_sha256sum = ${package_sha256sum}"
 
   binary_sha256sum=$(sha256sum ${binary_path} | awk '{print $1}')
