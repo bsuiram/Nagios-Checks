@@ -94,8 +94,8 @@ do_checks () {
   done
 
   if [ ${failed} -ne 0 ]; then
-    echo "ERROR: Verification of binary/package checksum failed for ${failed_binarys[@]}!"
-    exit 1
+    echo "CRITICAL: Verification of binary/package checksum failed for ${failed_binarys[@]}!"
+    exit 2
   else
     echo "OK: Package and binary checksum are identical for ${not_failed_binarys[@]}."
     exit 0
