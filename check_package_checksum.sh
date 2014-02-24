@@ -90,20 +90,22 @@ check_rpm () {
   echo
 }
 
-# Check packages
+# Check sums of binarys against package
 do_checks () {
   failed=0
+  not_failed=0
   for element in ${checks[@]}; do
     eval "prog=(\${$element[@]})"
     #echo "Checking ${prog[0]}"
     #${pkgmgr} binary_path package_name binary_name
     ${pkgmgr} ${prog[0]} ${prog[${index}]} ${prog[3]}
     if [ $? -ne 0 ]; then
-      failed_binarys[$failed]=${prog[0]}
+      failed_binarys[${failed}]=${prog[0]}
       failed=${failed}+1
       echo "ERROR: Package and binary checksum differs for ${prog[0]} in package \"${prog[${index}]}\"!"
     else
-      echo "OK: Package and binary checksums are identical for package \"${prog[${index}]}\"."
+      not_failed_binarys[${not_failed}]=${prog[0]}
+      not_failed=${not_failed}+1
     fi
   done
 
@@ -111,12 +113,9 @@ do_checks () {
     echo "Error: Checksum verification of ${failed_binarys[@]} failed!"
     exit 1
   else
-    echo "OK: Package and binary checksum are identical."
+    echo "OK: Package and binary checksum are identical for ${not_failed_binarys[@]}."
     exit 0
   fi
 }
 
 do_checks
-
-
-
