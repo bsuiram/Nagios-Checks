@@ -82,7 +82,7 @@ checksum () {
     echo "Binary path      = ${binary_path}"
     echo "Package checksum = ${package_checksum}"
     echo "Binary checksum  = ${binary_checksum}"
-    echo 
+    echo
   fi
 
   if [ ${binary_checksum} == ${package_checksum} ]; then
