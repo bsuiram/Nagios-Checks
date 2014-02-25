@@ -88,7 +88,7 @@ do_checks () {
   done
 
   if [ ${failed} -ne 0 ]; then
-    echo "CRITICAL: Verification of binar vs. pckage checksum failed!"
+    echo "CRITICAL: Verification of binary vs. package checksum failed!"
     echo "Affcted binarys: ${failed_binarys[@]}"
     echo "Affected packages: ${failed_packages[@]}"
     exit 2
