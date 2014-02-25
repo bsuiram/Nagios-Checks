@@ -116,12 +116,17 @@ do_checks () {
 
   if [ ${failed} -ne 0 ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
-    echo "Affcted binaries : ${failed_binarys[@]}"
-    echo "Affected packages: ${failed_packages[@]}"
+    if [ ${debug} == "true" ]; then
+      echo "Affcted binaries : ${failed_binarys[@]}"
+      echo "Affected packages: ${failed_packages[@]}"
+    fi
     exit 2
   else
     echo "OK: Package and binary checksum are identical for ${verified_binaries[@]}"
-    echo "Checked packages: ${verified_packages[@]}"
+    if [ ${debug} == "true" ]; then
+      echo "Checked binaries: ${verified_binaries[@]}"
+      echo "Checked packages: ${verified_packages[@]}"
+    fi
     exit 0
   fi
 }
