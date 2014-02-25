@@ -45,7 +45,7 @@ checksums () {
   #  2) package name from pseudo_binary_name array determined by distribution ${index}
   #  Returns: 0 if checksums are identical, and 1 if they differ.
   binary_path=${1}
-  package_name=${2}
+  #package_name=${2}
 
   case ${pkgmgr} in
     dpkg )
@@ -53,14 +53,17 @@ checksums () {
       # as ${package_name}.md5sums contains path without starting /
       binary_path_mod=${binary_path:1:${#binary_path}}
 
+      package_name=$(dpkg -S ${binary_path} | cut -d":" -f1)
       package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${binary_path_mod}$" | awk '{print $1}')
       binary_checksum=$(md5sum ${binary_path} | awk '{print $1}')
       ;;
     rpm_sha256 )
+       package_name=$(rpm -qf ${binary_path})
        package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${binary_path} " | awk '{print $4}')
        binary_checksum=$(sha256sum ${binary_path} | awk '{print $1}')
       ;;
     rpm_md5 )
+       package_name=$(rpm -qf ${binary_path})
        package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${binary_path} " | awk '{print $4}')
        binary_checksum=$(md5sum ${binary_path} | awk '{print $1}')
       ;;
