@@ -13,7 +13,7 @@ case ${distro} in
     distro_majrelease=$(lsb_release -a 2> /dev/null | awk '/Release/ {print $2}' | cut -d"." -f1)
     if [ ${distro_majrelease} -le 5 ]; then
       pkgmgr="rpm_md5"
-    elis
+    else
       pkgmgr="rpm_sha256"
     fi
     ;;
