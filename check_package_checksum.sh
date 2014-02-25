@@ -32,14 +32,15 @@ esac
 checks=( pBASH pSSHD pLOGIN pSU pSUDO )
 
 # Packages:
-# pseudo_binary_name=( '/full/path/to/binary' 'deb-package-name' 'rpm-package-name' 'binary_name' )
+# arrays of pseudo_binary_name=( '/full/path/to/binary' )
+# Might be expanded if needed in future.
 pBASH=( '/bin/bash' 'bash' 'bash' 'bash' )
 pSSHD=( '/usr/sbin/sshd' 'openssh-server' 'openssh-server' 'sshd' )
 pLOGIN=( '/bin/login' 'login' 'util-linux-ng' 'login' )
 pSU=( '/bin/su' 'login' 'coreutils' 'su' )
 pSUDO=( '/usr/bin/sudo' 'sudo' 'sudo' 'sudo' )
 
-checksums () {
+checksum () {
   # Takes 1 arguments;
   #  1) path from pseudo_binary_name array element #1
   #  Returns: 0 if checksums are identical, and 1 if they differ.
@@ -70,6 +71,7 @@ checksums () {
       exit 2
       ;;
   esac
+
        echo ${package_name}
        echo ${package_checksum}
        echo ${binary_checksum}
@@ -77,6 +79,7 @@ checksums () {
   if [ ${binary_checksum} == ${package_checksum} ]; then
     return 0
   else
+    checksum_package_name=${package_name}
     return 1
   fi
 }
@@ -89,11 +92,12 @@ do_checks () {
   for element in ${checks[@]}; do
     eval "prog=(\${$element[@]})"
 
-    checksums ${prog[0]} #${prog[${index}]}
+    checksum ${prog[0]} #${prog[${index}]}
 
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${prog[0]}
-      failed_packages[${failed}]=${prog[${index}]}
+      #failed_packages[${failed}]=${prog[${index}]}
+      failed_packages[${failed}]=${checksum_package_name}
       failed=$((failed+1))
 
     else
