@@ -5,11 +5,11 @@ distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
 
 case ${distro} in
   Ubuntu|Debian )
-    index=1
+    #index=1
     pkgmgr="dpkg"
     ;;
   RedHat|CentOS|Scientific )
-    index=2
+    #index=2
     distro_majrelease=$(lsb_release -a 2> /dev/null | awk '/Release/ {print $2}' | cut -d"." -f1)
     if [ ${distro_majrelease} -le 5 ]; then
       pkgmgr="rpm_md5"
@@ -40,12 +40,10 @@ pSU=( '/bin/su' 'login' 'coreutils' 'su' )
 pSUDO=( '/usr/bin/sudo' 'sudo' 'sudo' 'sudo' )
 
 checksums () {
-  # Takes 2 arguments;
+  # Takes 1 arguments;
   #  1) path from pseudo_binary_name array element #1
-  #  2) package name from pseudo_binary_name array determined by distribution ${index}
   #  Returns: 0 if checksums are identical, and 1 if they differ.
   binary_path=${1}
-  #package_name=${2}
 
   case ${pkgmgr} in
     dpkg )
@@ -91,7 +89,7 @@ do_checks () {
   for element in ${checks[@]}; do
     eval "prog=(\${$element[@]})"
 
-    checksums ${prog[0]} ${prog[${index}]}
+    checksums ${prog[0]} #${prog[${index}]}
 
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${prog[0]}
