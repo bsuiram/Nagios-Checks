@@ -8,11 +8,9 @@ distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
 
 case ${distro} in
   Ubuntu|Debian )
-    #index=1
     pkgmgr="dpkg"
     ;;
   RedHat|CentOS|Scientific )
-    #index=2
     distro_majrelease=$(lsb_release -a 2> /dev/null | awk '/Release/ {print $2}' | cut -d"." -f1)
     if [ ${distro_majrelease} -le 5 ]; then
       pkgmgr="rpm_md5"
@@ -94,7 +92,6 @@ checksum () {
 }
 
 do_checks () {
-
   failed=0
   not_failed=0
 
@@ -137,8 +134,11 @@ do_checks () {
       echo "Checked binaries:"
       for i in ${verified_binaries[@]}; do
         echo "  ${i}"
+        echo " ${verified_binaries[@]}"
+        echo " ${#verified_binaries[@]}"
       done
 
+      echo
       echo "Checked packages:"
       for i in ${verified_packages[@]}; do
         echo "  ${i}"
