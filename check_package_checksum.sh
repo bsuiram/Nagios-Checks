@@ -112,7 +112,7 @@ do_checks () {
     echo "Affected packages: ${failed_packages[@]}"
     exit 2
   else
-    echo "OK: Package and binary checksum are identical for ${not_failed_binarys[@]}"
+    echo "OK: Package and binary checksum are identical for ${verified_binarys[@]}"
     echo "Checked packages: ${verified_packages[@]}"
     exit 0
   fi
