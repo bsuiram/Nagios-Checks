@@ -25,7 +25,6 @@ case ${distro} in
 esac
 
 if [ ${debug} == "true" ]; then
-  # I'll make a debug option
   echo "We are running on ${distro} with major release ${distro_majrelease}"
   echo "  Using ${pkgmgr} to verify checksums."
   echo
@@ -135,9 +134,9 @@ do_checks () {
       for i in ${verified_binaries[@]}; do
         echo "  ${i}"
       done
-        echo " ${verified_binaries[@]}"
-        echo " ${#verified_binaries[@]}"
-        echo " ${verified_packages[@]}"
+        echo " ${verified_binaries[0]}"
+        echo " ${#verified_binaries[0]}"
+        echo " ${verified_packages[0]}"
 
       echo
       echo "Checked packages:"
