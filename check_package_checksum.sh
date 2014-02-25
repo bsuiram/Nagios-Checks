@@ -138,8 +138,8 @@ do_checks () {
         echo "  ${i}"
       done
 
-      echo "Checked binaries:"
-      for i in ${verified_binaries[@]}; do
+      echo "Checked packages:"
+      for i in ${verified_packages[@]}; do
         echo "  ${i}"
       done
     fi
