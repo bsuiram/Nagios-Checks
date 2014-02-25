@@ -28,25 +28,25 @@ esac
 
 if [ ${debug} == "true" ]; then
   # I'll make a debug option
-  echo "We are running on ${distro}:"
-  echo "  Using index [${index}] to resolve path to binary"
-  echo "  and ${pkgmgr} as package manager."
+  echo "We are running on ${distro} with major release ${distro_majrelease}"
+  echo "  Using ${pkgmgr} to verify checksums."
   echo
 fi
-#  Array of pseudo binary names to check
-checks=( pBASH pSSHD pLOGIN pSU pSUDO )
 
-# Packages:
-# arrays of pseudo_binary_name=( '/full/path/to/binary' )
+# Array of pseudo binary names to check.
+# To add a binary, add a fitting elemet to checks.
+# Then add a array containing full path to binary you want to check below.
+checks=( pBASH pSSHD pLOGIN pSU pSUDO )
+# Arrays of pBINNAME=( '/full/path/to/binary' )
 # Might be expanded if needed in future.
-pBASH=( '/bin/bash' 'bash' 'bash' 'bash' )
-pSSHD=( '/usr/sbin/sshd' 'openssh-server' 'openssh-server' 'sshd' )
-pLOGIN=( '/bin/login' 'login' 'util-linux-ng' 'login' )
-pSU=( '/bin/su' 'login' 'coreutils' 'su' )
-pSUDO=( '/usr/bin/sudo' 'sudo' 'sudo' 'sudo' )
+pBASH=( '/bin/bash' )
+pSSHD=( '/usr/sbin/sshd' )
+pLOGIN=( '/bin/login' )
+pSU=( '/bin/su' )
+pSUDO=( '/usr/bin/sudo' )
 
 checksum () {
-  # Takes 1 arguments;
+  # Takes 1 argument;
   #  1) path from pseudo_binary_name array element #1
   #  Returns: 0 if checksums are identical, and 1 if they differ.
   binary_path=${1}
