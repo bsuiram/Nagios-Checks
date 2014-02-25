@@ -83,7 +83,7 @@ do_checks () {
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${prog[0]}
       failed=$((failed+1))
-      echo "ERROR: Package and binary checksum differs for ${prog[0]} in package \"${prog[${index}]}\"!"
+      echo "CRITICAL: Package and binary checksum differs for ${prog[0]} in package \"${prog[${index}]}\"!"
     else
       not_failed_binarys[${not_failed}]=${prog[0]}
       not_failed=$((not_failed+1))
