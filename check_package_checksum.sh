@@ -10,7 +10,7 @@ case ${distro} in
     ;;
   RedHat|CentOS|Scientific )
     index=2
-    distro_majrelease=$(lsb_release -a 2> /dev/null | awk '/Release/ {print $2}')
+    distro_majrelease=$(lsb_release -a 2> /dev/null | awk '/Release/ {print $2}' | cut -d"." -f1)
     if [ ${distro_majrelease} -le 5 ]; then
       pkgmgr="rpm_md5"
     elis
