@@ -72,14 +72,13 @@ checksum () {
       ;;
   esac
 
-       echo ${package_name}
-       echo ${package_checksum}
-       echo ${binary_checksum}
+  echo ${package_name}
+  echo ${package_checksum}
+  echo ${binary_checksum}
 
   if [ ${binary_checksum} == ${package_checksum} ]; then
     return 0
   else
-    checksum_package_name=${package_name}
     return 1
   fi
 }
@@ -97,11 +96,12 @@ do_checks () {
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${prog[0]}
       #failed_packages[${failed}]=${prog[${index}]}
-      failed_packages[${failed}]=${checksum_package_name}
+      failed_packages[${failed}]=${package_name}
       failed=$((failed+1))
 
     else
-      not_failed_binarys[${not_failed}]=${prog[0]}
+      verified_binaries[${not_failed}]=${prog[0]}
+      verified_packages[${not_failed}]=${package_name}
       not_failed=$((not_failed+1))
     fi
   done
@@ -112,7 +112,8 @@ do_checks () {
     echo "Affected packages: ${failed_packages[@]}"
     exit 2
   else
-    echo "OK: Package and binary checksum are identical for ${not_failed_binarys[@]}."
+    echo "OK: Package and binary checksum are identical for ${not_failed_binarys[@]}"
+    echo "Checked packages: ${verified_packages[@]}"
     exit 0
   fi
 }
