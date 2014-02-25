@@ -10,7 +10,12 @@ case ${distro} in
     ;;
   RedHat|CentOS|Scientific )
     index=2
-    pkgmgr="rpm"
+    distro_majrelease=$(lsb_release -a 2> /dev/null | awk '/Release/ {print $2}')
+    if [ ${distro_majrelease} -le 5 ]; then
+      pkgmgr="rpm_md5"
+    elis
+      pkgmgr="rpm_sha256"
+    fi
     ;;
   * )
     echo "Unknown Distro: Please fix me.. im broken.."
@@ -51,11 +56,17 @@ checksums () {
       package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${binary_path_mod}$" | awk '{print $1}')
       binary_checksum=$(md5sum ${binary_path} | awk '{print $1}')
       ;;
-    rpm )
+    rpm_sha256 )
        package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${binary_path} " | awk '{print $4}')
        binary_checksum=$(sha256sum ${binary_path} | awk '{print $1}')
       ;;
+    rpm_md5 )
+       package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${binary_path} " | awk '{print $4}')
+       binary_checksum=$(md5sum ${binary_path} | awk '{print $1}')
+      ;;
     * )
+      echo "wat?!"
+      exit 2
       ;;
   esac
 
