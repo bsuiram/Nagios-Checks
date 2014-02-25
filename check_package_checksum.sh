@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Debug true/false
+debug="true"
+
 # Get distro and determine witch element to use as package name
 distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
 
@@ -23,11 +26,12 @@ case ${distro} in
     ;;
 esac
 
-# I'll make a debug option
-#echo "We are running on ${distro}:"
-#echo "  Using index [${index}] to resolve path to binary"
-#echo "  and ${pkgmgr} as package manager."
-
+if [ ${debug} == "true" ]; then
+  # I'll make a debug option
+  echo "We are running on ${distro}:"
+  echo "  Using index [${index}] to resolve path to binary"
+  echo "  and ${pkgmgr} as package manager."
+fi
 #  Array of pseudo binary names to check
 checks=( pBASH pSSHD pLOGIN pSU pSUDO )
 
@@ -72,9 +76,12 @@ checksum () {
       ;;
   esac
 
-  echo ${package_name}
-  echo ${package_checksum}
-  echo ${binary_checksum}
+  if [ ${debug} == "true" ]; then
+    echo "Package name     = ${package_name}"
+    echo "Binary path      = ${binary_path}"
+    echo "Package checksum = ${package_checksum}"
+    echo "Binary checksum  = ${binary_checksum}"
+  fi
 
   if [ ${binary_checksum} == ${package_checksum} ]; then
     return 0
@@ -95,7 +102,6 @@ do_checks () {
 
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${prog[0]}
-      #failed_packages[${failed}]=${prog[${index}]}
       failed_packages[${failed}]=${package_name}
       failed=$((failed+1))
 
