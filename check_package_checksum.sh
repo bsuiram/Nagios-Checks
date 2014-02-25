@@ -36,7 +36,7 @@ fi
 # Array of pseudo binary names to check.
 # To add a binary, add a fitting elemet to checks.
 # Then add a array containing full path to binary you want to check below.
-checks=( pBASH pSSHD pLOGIN pSU pSUDO )
+checks=( pBASH pSSHD pLOGIN pSU pSUDO pHTTPD)
 # Arrays of pBINNAME=( '/full/path/to/binary' )
 # Might be expanded if needed in future.
 pBASH=( '/bin/bash' )
@@ -44,10 +44,11 @@ pSSHD=( '/usr/sbin/sshd' )
 pLOGIN=( '/bin/login' )
 pSU=( '/bin/su' )
 pSUDO=( '/usr/bin/sudo' )
+pHTTPD=( '/usr/sbin/httpd' )
 
 checksum () {
   # Takes 1 argument;
-  #  1) path from pseudo_binary_name array element #1
+  #  1) path from pseudo_binary_name array element
   #  Returns: 0 if checksums are identical, and 1 if they differ.
   binary_path=${1}
 
