@@ -134,9 +134,9 @@ do_checks () {
       echo "Checked binaries:"
       for i in ${verified_binaries[@]}; do
         echo "  ${i}"
+      done
         echo " ${verified_binaries[@]}"
         echo " ${#verified_binaries[@]}"
-      done
 
       echo
       echo "Checked packages:"
