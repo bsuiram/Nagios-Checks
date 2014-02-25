@@ -100,7 +100,7 @@ do_checks () {
   for element in ${checks[@]}; do
     eval "prog=(\${$element[@]})"
 
-    checksum ${prog[0]} #${prog[${index}]}
+    checksum ${prog[0]}
 
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${prog[0]}
@@ -117,15 +117,31 @@ do_checks () {
   if [ ${failed} -ne 0 ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
     if [ ${debug} == "true" ]; then
-      echo "Affcted binaries : ${failed_binarys[@]}"
-      echo "Affected packages: ${failed_packages[@]}"
+      echo
+      echo "Affcted binaries :"
+      for i in ${failed_binarys[@]}; do
+        echo "  ${i}"
+      done
+
+      echo "Affected packages:"
+      for i in ${failed_packages[@]}; do
+        echo "  ${i}"
+      done
     fi
     exit 2
   else
-    echo "OK: Package and binary checksum are identical for ${verified_binaries[@]}"
+    echo "OK: Package and binary checksum are identical"
     if [ ${debug} == "true" ]; then
-      echo "Checked binaries: ${verified_binaries[@]}"
-      echo "Checked packages: ${verified_packages[@]}"
+      echo
+      echo "Checked binaries:"
+      for i in ${verified_binaries[@]}; do
+        echo "  ${i}"
+      done
+
+      echo "Checked binaries:"
+      for i in ${verified_binaries[@]}; do
+        echo "  ${i}"
+      done
     fi
     exit 0
   fi
