@@ -31,6 +31,7 @@ if [ ${debug} == "true" ]; then
   echo "We are running on ${distro}:"
   echo "  Using index [${index}] to resolve path to binary"
   echo "  and ${pkgmgr} as package manager."
+  echo
 fi
 #  Array of pseudo binary names to check
 checks=( pBASH pSSHD pLOGIN pSU pSUDO )
@@ -81,6 +82,7 @@ checksum () {
     echo "Binary path      = ${binary_path}"
     echo "Package checksum = ${package_checksum}"
     echo "Binary checksum  = ${binary_checksum}"
+    echo 
   fi
 
   if [ ${binary_checksum} == ${package_checksum} ]; then
