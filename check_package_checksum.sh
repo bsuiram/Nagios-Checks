@@ -69,6 +69,9 @@ checksums () {
       exit 2
       ;;
   esac
+       echo ${package_name}
+       echo ${package_checksum}
+       echo ${binary_checksum}
 
   if [ ${binary_checksum} == ${package_checksum} ]; then
     return 0
@@ -100,7 +103,7 @@ do_checks () {
 
   if [ ${failed} -ne 0 ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
-    echo "Affcted binarys: ${failed_binarys[@]}"
+    echo "Affcted binaries : ${failed_binarys[@]}"
     echo "Affected packages: ${failed_packages[@]}"
     exit 2
   else
