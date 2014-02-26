@@ -104,11 +104,13 @@ do_checks () {
       verified=$((verified+1))
     fi
   done
+  echo "failed = ${failed}"
+  echo "verified = ${verified}"
 }
 
 output () {
-  echo "failed_binarys: ${#failed_binarys[@]} blatti blattblatt"
-  if [ ${#failed_binarys[@]} -ne 0 ]; then
+  echo "failed_binaries: ${#failed_binarys[@]} blatti blattblatt"
+  if [ ${#failed_binarys[@]} -ne "0" ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
     for i in ${failed_binarys[@]}; do
         echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
