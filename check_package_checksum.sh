@@ -31,14 +31,7 @@ if [ ${debug} == "true" ]; then
 fi
 
 # Array of binaries to check.
-checks=(
-  '/bin/bash'
-  '/usr/sbin/sshd'
-  '/bin/login'
-  '/bin/su'
-  '/usr/bin/sudo'
-  '/usr/sbin/httpd'
-)
+checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' )
 
 echo ${checks[@]}
 
