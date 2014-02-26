@@ -30,18 +30,15 @@ if [ ${debug} == "true" ]; then
   echo
 fi
 
-# Array of pseudo binary names to check.
-# To add a binary, add a fitting elemet to checks.
-# Then add a array containing full path to binary you want to check below.
-checks=( pBASH pSSHD pLOGIN pSU pSUDO pHTTPD)
-# Arrays of pBINNAME=( '/full/path/to/binary' )
-# Might be expanded if needed in future.
-pBASH=( '/bin/bash' )
-pSSHD=( '/usr/sbin/sshd' )
-pLOGIN=( '/bin/login' )
-pSU=( '/bin/su' )
-pSUDO=( '/usr/bin/sudo' )
-pHTTPD=( '/usr/sbin/httpd' )
+# Array of binaries to check.
+checks=(
+  '/bin/bash'
+  '/usr/sbin/sshd'
+  '/bin/login'
+  '/bin/su'
+  '/usr/bin/sudo'
+  '/usr/sbin/httpd'
+)
 
 checksum () {
   # Takes 1 argument;
