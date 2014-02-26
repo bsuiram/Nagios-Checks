@@ -46,17 +46,12 @@ check_file_exists () {
   # Check if file exists, if not, delete it from array.
   index=0
   for file in ${checks[@]}; do
-    echo ${file}
     if [ ! -f ${file} ]; then
-      echo "${file} is not a file!"
       skiped_files[${index}]=${file}
       unset checks[${index}]
     fi
     let index=index+1
   done
-
-      echo ${checks[@]}
-      echo ${skiped_files[@]}
 
   # Debug
   if [ ${debug} == "true" ]; then
@@ -72,6 +67,7 @@ check_file_exists () {
     done
     echo
   fi
+
   return 0
 }
 
