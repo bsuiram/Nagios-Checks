@@ -131,8 +131,10 @@ do_checks () {
     if [ ${debug} == "true" ]; then
       echo
       echo "Checked binaries:"
+      count=0
       for i in ${#verified_binaries[@]}; do
-        echo -e " OK: ${verified_binaries[$i]} \t\tmatches ${verified_package[$i]}"
+        echo -e " OK: ${verified_binaries[${i}]} matches ${verified_packages[${i}]}"
+        let count=count+1
       done
 
       #echo
