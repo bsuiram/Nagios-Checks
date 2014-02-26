@@ -107,7 +107,7 @@ do_checks () {
 }
 
 output () {
-  if [[ -z "${failed_binarys[@]}" ]]; then
+  if [ ${#failed_binarys[0]} -eq 0 ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
     for i in ${failed_binarys[@]}; do
         echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
