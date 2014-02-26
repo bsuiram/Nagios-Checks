@@ -76,7 +76,7 @@ checksum () {
   esac
 
   if [ ${debug_verbose} == "true" ]; then
-    echo "function \"${FUNCNAME}\" - debug:"
+    echo "function \"${FUNCNAME}\" - verbose debug:"
     echo "  Package name     = ${package_name}"
     echo "  Binary path      = ${binary_path}"
     echo "  Package checksum = ${package_checksum}"
@@ -99,7 +99,7 @@ do_checks () {
   verified=0
 
   if [ ${debug_verbose} == "true" ]; then
-    echo "function \"${FUNCNAME}\" - debug:"
+    echo "function \"${FUNCNAME}\" - verbose debug:"
     echo "  Binaries to check: ${checks[@]}"
     echo
   fi
@@ -120,6 +120,7 @@ do_checks () {
 
   # Debug
   if [ ${debug_verbose} == "true" ]; then
+    echo "function \"${FUNCNAME}\" - verbose debug:"
     echo "  #failed              = ${failed}"
     echo
     echo "  failed_binaries[@]   ="
