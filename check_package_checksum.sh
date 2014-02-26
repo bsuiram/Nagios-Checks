@@ -46,19 +46,21 @@ check_file_exists () {
   # Check if file exists, if not, delete it from array.
   index=0
   for file in ${checks[@]}; do
+  echo ${file}
     if [ ! -f ${file} ]; then
       skiped_files[${index}]=${file}
       unset checks[${index}]
       let index=index+1
-      echo ${checks[@]}
-      echo ${skiped_files[@]}
     fi
   done
+
+      echo ${checks[@]}
+      echo ${skiped_files[@]}
 
   # Debug
   if [ ${debug} == "true" ]; then
     echo "function \"${FUNCNAME}\" - debug:"
-    echo "  Binaries to check:"
+    echo "  files to check:"
     for file in ${checks[@]}; do
       echo "    ${file}"
     done
