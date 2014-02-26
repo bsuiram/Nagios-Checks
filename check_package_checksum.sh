@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Array of binaries to check.
+# Array of binaries to check
 checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' )
 
 # Debug true/false
@@ -10,7 +10,6 @@ debug_verbose="true"
 
 check_distro () {
   # Get distro and determine what checksum to use
-
   distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
 
   case ${distro} in
@@ -32,7 +31,7 @@ check_distro () {
   esac
 
   if [ ${debug} == "true" ]; then
-    echo 
+    echo
     echo "function \"${FUNCNAME}\" - debug:"
     echo "  Distro        = ${distro}"
     echo "  Major release = ${distro_majrelease}"
@@ -94,7 +93,7 @@ checksum () {
 
 do_checks () {
   # Itterates ${checks} array over checsum() function
-  # and poulates failed and verified arrays
+  # and populates failed and verified arrays
 
   failed=0
   verified=0
@@ -122,11 +121,24 @@ do_checks () {
   # Debug
   if [ ${debug_verbose} == "true" ]; then
     echo "  #failed              = ${failed}"
-    echo "  failed_binaries[@]   = ${failed_binaries[@]}"
-    echo "  failed_packages[@]   = ${failed_packages[@]}"
+    echo "  failed_binaries[@]   ="
+    for i in ${failed_binaries[@]}; do
+      echo "    ${i}"
+    done
+    echo "  failed_packages[@]   ="
+    for i in ${failed_packages[@]}; do
+      echo "    ${i}"
+    done
+    echo
     echo "  #verified            = ${verified}"
-    echo "  verified_binaries[@] = ${verified_binaries[@]}"
-    echo "  verified_packages[@] = ${verified_packages[@]}"
+    echo "  verified_binaries[@] ="
+    for i in ${verified_binaries[@]}; do
+      echo "    ${i}"
+    done
+    echo "  verified_packages[@] ="
+    for i in ${verified_packages[@]};do
+      echo "    ${i}"
+    done
     echo
   fi
 
@@ -149,8 +161,9 @@ output () {
   # Debug
   if [ ${debug_verbose} == "true" ] ; then
     echo
-    echo "function \"${FUNCNAME}\" - debug:"
+    echo "function \"${FUNCNAME}\" - verbose debug:"
     echo "  nagios_error = ${nagios_error}"
+    echo
   fi
 
   return ${nagiso_error}
@@ -184,5 +197,4 @@ check_distro
 do_checks
 debug_output
 output
-
 exit ${nagios_error}
