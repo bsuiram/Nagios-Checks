@@ -40,6 +40,8 @@ checks=(
   '/usr/sbin/httpd'
 )
 
+echo ${checks[@]}
+
 checksum () {
   # Takes 1 argument;
   #  1) path from pseudo_binary_name array element
