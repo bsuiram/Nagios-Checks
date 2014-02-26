@@ -47,7 +47,7 @@ check_file_exists () {
   index=0
   for file in ${checks[@]}; do
     if [ ! -f ${file} ]; then
-      unset ${checks[${index}]}
+      unset checks[${index}]
       skiped_binaries[${index}]=${binary}
       let index=index+1
     fi
