@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Array of binaries to check
-checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' )
+checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' '/home/marius/blatti' )
 
 # Debug true/false
 debug="true"
