@@ -48,6 +48,7 @@ check_file_exists () {
   for file in ${checks[@]}; do
   echo ${file}
     if [ ! -f ${file} ]; then
+      echo "${file} is not a file!"
       skiped_files[${index}]=${file}
       unset checks[${index}]
       let index=index+1
