@@ -56,7 +56,7 @@ check_file_exists () {
   # Debug
   if [ ${debug} == "true" ]; then
     echo "function \"${FUNCNAME}\" - debug:"
-    echo "  files to check:"
+    echo "  Files to check:"
     for file in ${checks[@]}; do
       echo "    ${file}"
     done
@@ -71,12 +71,51 @@ check_file_exists () {
   return 0
 }
 
+get_package_name () {
+  # Check if file is handled by package manager
+  # Returns package name if claimd by package
+  # Returns "orpahned" if not
+  local file=$1
+
+  case ${pkgmgr} in
+    dpkg )
+      package_name=$(dpkg -S ${file} | cut -d":" -f1) 2> /dev/null
+      if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        package_name="orphaned"
+      fi
+      ;;
+    rpm_* )
+      package_name=$(rpm -qf ${file}) 2> /dev/null
+      if [ $? -ne 0 ]; then
+        package_name="orphaned"
+      fi
+      ;;
+    * )
+      echo "Oh lordi lord! function \"${FUNCNAME}\" failed hard, there may be not be a god!"
+      package_name="orphaned"
+      ;;
+  esac
+
+  # Debug
+   if [ ${debug} == "true" ]; then
+     echo "function \"${FUNCNAME}\" - debug:"
+     if [ ${package_name} == "orphaned" ]; then
+       echo "  \"${file}\" is orphaned, no package claims to own it."
+     else
+       echo "  \"${file}\" is claimend by \"${package_name}\""
+     fi
+   fi
+
+   return ${package_name}
+}
+
 checksum () {
   # Takes 1 argument;
   #  1) path from pseudo_binary_name array element
   #  Returns: 0 if checksums are identical, and 1 if they differ.
 
-  binary_path=${1}
+  local binary_path=${1}
+  local package_name=$(get_package_name ${binary_file})
 
   case ${pkgmgr} in
     dpkg )
@@ -84,17 +123,14 @@ checksum () {
       # as ${package_name}.md5sums contains path without starting /
       binary_path_mod=${binary_path:1:${#binary_path}}
 
-      package_name=$(dpkg -S ${binary_path} | cut -d":" -f1)
       package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${binary_path_mod}$" | awk '{print $1}')
       binary_checksum=$(md5sum ${binary_path} | awk '{print $1}')
       ;;
     rpm_sha256 )
-       package_name=$(rpm -qf ${binary_path})
        package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${binary_path} " | awk '{print $4}')
        binary_checksum=$(sha256sum ${binary_path} | awk '{print $1}')
       ;;
     rpm_md5 )
-       package_name=$(rpm -qf ${binary_path})
        package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${binary_path} " | awk '{print $4}')
        binary_checksum=$(md5sum ${binary_path} | awk '{print $1}')
       ;;
@@ -124,8 +160,8 @@ do_checks () {
   # Itterates ${checks} array over checsum() function
   # and populates failed and verified arrays
 
-  failed=0
-  verified=0
+  local failed=0
+  local verified=0
 
   for binary in ${checks[@]}; do
     checksum ${binary}
