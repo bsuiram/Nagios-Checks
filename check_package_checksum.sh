@@ -92,7 +92,7 @@ checksum () {
 
 do_checks () {
   failed=0
-  not_failed=0
+  verified=0
 
   for element in ${checks[@]}; do
     eval "prog=(\${$element[@]})"
@@ -105,44 +105,49 @@ do_checks () {
       failed=$((failed+1))
 
     else
-      verified_binaries[${not_failed}]=${prog[0]}
-      verified_packages[${not_failed}]=${package_name}
-      not_failed=$((not_failed+1))
+      verified_binaries[${verified}]=${prog[0]}
+      verified_packages[${verified}]=${package_name}
+      verified=$((verified+1))
     fi
   done
+}
 
+output () {
   if [ ${failed} -ne 0 ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
-    if [ ${debug} == "true" ]; then
-      echo
-      echo "Affcted binaries/packages:"
-      count_failed=0
-      for i in ${failed_binarys[@]}; do
+    for i in ${failed_binarys[@]}; do
         echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
-      done
-      echo
-
-      echo "Verified binarys/packages:"
-      count_verified=0
-      for i in ${verified_binaries[@]}; do
-        echo -e "  OK: ${verified_binaries[${count}]} matches ${verified_packages[${count}]}"
-        let count=count+1
-      done
-    fi
-    exit 2
+    done
+    nagios_error=2
+    return 2
   else
     echo "OK: Package and binary checksum are identical"
-    if [ ${debug} == "true" ]; then
-      echo
-      echo "Checked binaries/packages:"
-      count=0
-      for i in ${verified_binaries[@]}; do
-        echo -e "  OK: ${verified_binaries[${count}]} matches ${verified_packages[${count}]}"
-        let count=count+1
-      done
-    fi
-    exit 0
+    nagios_error=0
+    return 0
+  fi
+}
+
+debug_output () {
+  if [ ${debug} == "true" ]; then
+    echo
+    echo "Affcted binaries/packages:"
+    count_failed=0
+    for i in ${failed_binarys[@]}; do
+      echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
+    done
+    echo
+
+    echo "Verified binarys/packages:"
+    count_verified=0
+    for i in ${verified_binaries[@]}; do
+      echo -e "  OK: ${verified_binaries[${count}]} matches ${verified_packages[${count}]}"
+      let count=count+1
+    done
   fi
 }
 
 do_checks
+output
+debug_output
+
+exit ${nagios_error}
