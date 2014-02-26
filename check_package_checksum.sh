@@ -121,20 +121,24 @@ do_checks () {
   # Debug
   if [ ${debug_verbose} == "true" ]; then
     echo "  #failed              = ${failed}"
+    echo
     echo "  failed_binaries[@]   ="
     for i in ${failed_binaries[@]}; do
       echo "    ${i}"
     done
+    echo
     echo "  failed_packages[@]   ="
     for i in ${failed_packages[@]}; do
       echo "    ${i}"
     done
     echo
     echo "  #verified            = ${verified}"
+    echo
     echo "  verified_binaries[@] ="
     for i in ${verified_binaries[@]}; do
       echo "    ${i}"
     done
+    echo
     echo "  verified_packages[@] ="
     for i in ${verified_packages[@]};do
       echo "    ${i}"
