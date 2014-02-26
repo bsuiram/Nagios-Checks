@@ -32,10 +32,11 @@ check_distro () {
   esac
 
   if [ ${debug} == "true" ]; then
+    echo 
     echo "function \"${FUNCNAME}\" - debug:"
-    echo "  Distro = ${distro}"
-    echo "  Major release ${distro_majrelease}"
-    echo "  Using \"${pkgmgr}\" in to verify checksums."
+    echo "  Distro        = ${distro}"
+    echo "  Major release = ${distro_majrelease}"
+    echo "  Checksum util = \"${pkgmgr}\""
     echo
   fi
 }
