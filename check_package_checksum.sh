@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# Debug true/false
-debug="false"
-
 # Array of binaries to check.
 checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' )
 
-if [ ${debug} == "true" ]; then
-  echo "Binaries to check:"
-  echo ${checks[@]}
+# Debug true/false
+debug="true"
+debug_verbose="true"
+
+if [ ${debug_verbose} == "true" ]; then
+  echo "function \"${FUNCNAME}\" - debug:"
+  echo "  Binaries to check: ${checks[@]}"
 fi
 
 check_distro () {
@@ -34,8 +35,9 @@ check_distro () {
   esac
 
   if [ ${debug} == "true" ]; then
-    echo "We are running on ${distro} with major release ${distro_majrelease}"
-    echo "  Using ${pkgmgr} to verify checksums."
+    echo "function \"${FUNCNAME}\" - debug:"
+    echo "  We are running on ${distro} with major release ${distro_majrelease}"
+    echo "  Using \"${pkgmgr}\" in to verify checksums."
     echo
   fi
 }
@@ -67,16 +69,17 @@ checksum () {
        binary_checksum=$(md5sum ${binary_path} | awk '{print $1}')
       ;;
     * )
-      echo "wat?!"
+      echo "Wat?! function \"${FUNCNAME}\" failed hard, this should NOT happen.."
       exit 2
       ;;
   esac
 
-  if [ ${debug} == "true" ]; then
-    echo "Package name     = ${package_name}"
-    echo "Binary path      = ${binary_path}"
-    echo "Package checksum = ${package_checksum}"
-    echo "Binary checksum  = ${binary_checksum}"
+  if [ ${debug_verbose} == "true" ]; then
+    echo "function \"${FUNCNAME}\" - debug:"
+    echo "  Package name     = ${package_name}"
+    echo "  Binary path      = ${binary_path}"
+    echo "  Package checksum = ${package_checksum}"
+    echo "  Binary checksum  = ${binary_checksum}"
     echo
   fi
 
@@ -88,6 +91,9 @@ checksum () {
 }
 
 do_checks () {
+  # Itterates ${checks} array over checsum() function
+  # and poulates failed and verified arrays
+
   failed=0
   verified=0
 
@@ -104,24 +110,43 @@ do_checks () {
       verified=$((verified+1))
     fi
   done
-  echo "failed = ${failed}"
-  echo "verified = ${verified}"
+
+  # Debug
+  if [ ${debug_verbose} == "true" ]; then
+    echo "function ${FUNCNAME} () - debug:"
+    echo "  #failed = ${failed}"
+    echo "  failed_binaries[@] = ${failed_binaries[@]}"
+    echo "  failed_packages[@] = ${failed_packages[@]}"
+    echo "  #verified = ${verified}"
+    echo "  verified_binaries[@] = ${verified_binaries[@]}"
+    echo "  verified_packages[@] = ${verified_packages[@]}"
+    echo
+  fi
+
+  return 0
 }
 
 output () {
-  echo "failed_binaries: ${#failed_binarys[@]} blatti blattblatt"
+
   if [ ${#failed_binarys[@]} -ne "0" ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
     for i in ${failed_binarys[@]}; do
         echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
     done
     nagios_error=2
-    return 2
   else
     echo "OK: Package and binary checksum are identical"
     nagios_error=0
-    return 0
   fi
+
+  # Debug
+  if [ ${debug_verbse} == "true" ]; then
+    echo "function ${FUNCNAME} () - debug:"
+    echo "  nagios_error = ${nagios_error}"
+    echo
+  fi
+
+  return ${nagiso_error}
 }
 
 debug_output () {
