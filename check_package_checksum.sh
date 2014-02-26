@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Debug true/false
-debug="true"
+debug="false"
 
 # Get distro and determine witch element to use as package name
 distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
