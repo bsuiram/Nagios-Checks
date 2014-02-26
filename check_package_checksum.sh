@@ -131,18 +131,14 @@ do_checks () {
     if [ ${debug} == "true" ]; then
       echo
       echo "Checked binaries:"
-      for i in ${verified_binaries[@]}; do
-        echo "  ${i}"
+      for i in ${#verified_binaries[@]}; do
+        echo -e " OK: ${verified_binaries[$i]} \t\tmatches ${verified_package[$i]}"
       done
-        echo " ${verified_binaries[1]}"
-        echo " ${verified_binaries[1]}"
-        echo " ${verified_packages[1]}"
 
-      echo
-      echo "Checked packages:"
-      for i in ${verified_packages[@]}; do
-        echo "  ${i}"
-      done
+      #echo
+      #for i in ${verified_packages[@]}; do
+      #  echo "  ${i}"
+      #done
     fi
     exit 0
   fi
