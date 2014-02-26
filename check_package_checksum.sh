@@ -5,7 +5,7 @@ checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/u
 
 # Debug true/false
 debug="true"
-debug_verbose="true"
+debug_verbose="false"
 
 
 check_distro () {
@@ -47,9 +47,11 @@ check_file_exists () {
   index=0
   for file in ${checks[@]}; do
     if [ ! -f ${file} ]; then
+      skiped_files[${index}]=${file}
       unset checks[${index}]
-      skiped_binaries[${index}]=${binary}
       let index=index+1
+      echo ${checks[@]}
+      echo ${skiped_files[@]}
     fi
   done
 
@@ -62,7 +64,7 @@ check_file_exists () {
     done
     echo
     echo "  Missing files:"
-    for missing in ${skiped_binaries[@]}; do
+    for missing in ${skiped_files[@]}; do
       echo "    ${missing}"
     done
     echo
