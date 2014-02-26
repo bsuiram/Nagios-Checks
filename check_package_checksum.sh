@@ -42,6 +42,34 @@ check_distro () {
   return 0
 }
 
+check_file_exists () {
+  # Check if file exists, if not, delete it from array.
+  index=0
+  for file in ${checks[@]}; do
+    if [ ! -f ${file} ]; then
+      unset ${checks[${index}]}
+      skiped_binaries[${index}]=${binary}
+      let index=index+1
+    fi
+  done
+
+  # Debug
+  if [ ${debug} == "true" ]; then
+    echo "function \"${FUNCNAME}\" - debug:"
+    echo "  Binaries to check:"
+    for file in ${checks[@]}; do
+      echo "    ${file}"
+    done
+    echo
+    echo "  Missing files:"
+    for missing in ${skiped_binaries[@]}; do
+      echo "    ${missing}"
+    done
+    echo
+  fi
+  return 0
+}
+
 checksum () {
   # Takes 1 argument;
   #  1) path from pseudo_binary_name array element
@@ -97,15 +125,6 @@ do_checks () {
 
   failed=0
   verified=0
-
-  if [ ${debug} == "true" ]; then
-    echo "function \"${FUNCNAME}\" - debug:"
-    echo "  Binaries to check:"
-    for i in ${checks[@]}; do
-      echo "     ${i}"
-    done
-    echo
-  fi
 
   for binary in ${checks[@]}; do
     checksum ${binary}
@@ -202,6 +221,7 @@ debug_output () {
 }
 
 check_distro
+check_file_exists
 do_checks
 debug_output
 output
