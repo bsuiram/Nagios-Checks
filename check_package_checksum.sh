@@ -3,37 +3,42 @@
 # Debug true/false
 debug="false"
 
-# Get distro and determine witch element to use as package name
-distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
-
-case ${distro} in
-  Ubuntu|Debian )
-    pkgmgr="dpkg"
-    ;;
-  RedHat|CentOS|Scientific )
-    distro_majrelease=$(lsb_release -a 2> /dev/null | awk '/Release/ {print $2}' | cut -d"." -f1)
-    if [ ${distro_majrelease} -le 5 ]; then
-      pkgmgr="rpm_md5"
-    else
-      pkgmgr="rpm_sha256"
-    fi
-    ;;
-  * )
-    echo "Unknown Distro: Please fix me.. im broken.."
-    exit 1
-    ;;
-esac
-
-if [ ${debug} == "true" ]; then
-  echo "We are running on ${distro} with major release ${distro_majrelease}"
-  echo "  Using ${pkgmgr} to verify checksums."
-  echo
-fi
-
 # Array of binaries to check.
 checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' )
 
-echo ${checks[@]}
+if [ ${debug} == "true" ]; then
+  echo "Binaries to check:"
+  echo ${checks[@]}
+fi
+
+check_distro () {
+  # Get distro and determine witch element to use as package name
+  distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
+
+  case ${distro} in
+    Ubuntu|Debian )
+      pkgmgr="dpkg"
+      ;;
+    RedHat|CentOS|Scientific )
+      distro_majrelease=$(lsb_release -a 2> /dev/null | awk '/Release/ {print $2}' | cut -d"." -f1)
+      if [ ${distro_majrelease} -le 5 ]; then
+        pkgmgr="rpm_md5"
+      else
+        pkgmgr="rpm_sha256"
+      fi
+      ;;
+    * )
+      echo "Unknown Distro: Please fix me.. im broken.."
+      exit 1
+      ;;
+  esac
+
+  if [ ${debug} == "true" ]; then
+    echo "We are running on ${distro} with major release ${distro_majrelease}"
+    echo "  Using ${pkgmgr} to verify checksums."
+    echo
+  fi
+}
 
 checksum () {
   # Takes 1 argument;
@@ -86,18 +91,15 @@ do_checks () {
   failed=0
   verified=0
 
-  for binaries in ${checks[@]}; do
-   # eval "prog=(\${$element[@]})"
-    checksum ${binaries}
-   # checksum ${prog[0]}
+  for binary in ${checks[@]}; do
+    checksum ${binary}
 
     if [ $? -ne 0 ]; then
-      failed_binarys[${failed}]=${prog[0]}
+      failed_binarys[${failed}]=${binary}
       failed_packages[${failed}]=${package_name}
       failed=$((failed+1))
-
     else
-      verified_binaries[${verified}]=${prog[0]}
+      verified_binaries[${verified}]=${binary}
       verified_packages[${verified}]=${package_name}
       verified=$((verified+1))
     fi
@@ -105,7 +107,7 @@ do_checks () {
 }
 
 output () {
-  if [ ${failed} -ne 0 ]; then
+  if [[ -z "${failed_binarys[@]}" ]]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
     for i in ${failed_binarys[@]}; do
         echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
@@ -138,8 +140,9 @@ debug_output () {
   fi
 }
 
+check_distro
 do_checks
-output
 debug_output
+output
 
 exit ${nagios_error}
