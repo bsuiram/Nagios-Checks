@@ -113,7 +113,7 @@ do_checks () {
 
   # Debug
   if [ ${debug_verbose} == "true" ]; then
-    echo "function ${FUNCNAME} () - debug:"
+    echo "function \"${FUNCNAME}\" - debug:"
     echo "  #failed = ${failed}"
     echo "  failed_binaries[@] = ${failed_binaries[@]}"
     echo "  failed_packages[@] = ${failed_packages[@]}"
@@ -140,7 +140,7 @@ output () {
   fi
 
   # Debug
-  if [ ${debug_verbse} == "true" ]; then
+  if [ ${debug_verbose} == "true" ] ; then
     echo "function ${FUNCNAME} () - debug:"
     echo "  nagios_error = ${nagios_error}"
     echo
@@ -151,20 +151,23 @@ output () {
 
 debug_output () {
   if [ ${debug} == "true" ]; then
+    echo "function ${FUNCNAME} () - debug:"
     echo
-    echo "Affcted binaries/packages:"
+    echo "  Affcted binaries/packages:"
     count_failed=0
     for i in ${failed_binarys[@]}; do
-      echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
+      echo "    ${failed_binarys[${count_failed}]} doen not match ${failed_packages[${count_failed}]}"
+      let count_failed=count_failed+1
     done
     echo
 
-    echo "Verified binarys/packages:"
+    echo "  Verified binarys/packages:"
     count_verified=0
     for i in ${verified_binaries[@]}; do
-      echo -e "  OK: ${verified_binaries[${count}]} matches ${verified_packages[${count}]}"
-      let count=count+1
+      echo "    ${verified_binaries[${count_verified}]} matches ${verified_packages[${count_verified}]}"
+      let count_verified=count_verified+1
     done
+    echo
   fi
 }
 
