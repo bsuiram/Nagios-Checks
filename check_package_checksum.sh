@@ -39,6 +39,8 @@ check_distro () {
     echo "  Checksum util = \"${pkgmgr}\""
     echo
   fi
+
+  return 0
 }
 
 checksum () {
@@ -174,6 +176,8 @@ debug_output () {
     done
     echo
   fi
+
+  return 0
 }
 
 check_distro
