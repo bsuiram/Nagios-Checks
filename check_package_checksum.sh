@@ -7,13 +7,10 @@ checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/u
 debug="true"
 debug_verbose="true"
 
-if [ ${debug_verbose} == "true" ]; then
-  echo "function \"${FUNCNAME}\" - debug:"
-  echo "  Binaries to check: ${checks[@]}"
-fi
 
 check_distro () {
-  # Get distro and determine witch element to use as package name
+  # Get distro and determine what checksum to use
+
   distro=$(lsb_release -a 2> /dev/null | awk '/Distributor/ {print $3}')
 
   case ${distro} in
@@ -36,7 +33,8 @@ check_distro () {
 
   if [ ${debug} == "true" ]; then
     echo "function \"${FUNCNAME}\" - debug:"
-    echo "  We are running on ${distro} with major release ${distro_majrelease}"
+    echo "  Distro = ${distro}"
+    echo "  Major release ${distro_majrelease}"
     echo "  Using \"${pkgmgr}\" in to verify checksums."
     echo
   fi
@@ -46,6 +44,7 @@ checksum () {
   # Takes 1 argument;
   #  1) path from pseudo_binary_name array element
   #  Returns: 0 if checksums are identical, and 1 if they differ.
+
   binary_path=${1}
 
   case ${pkgmgr} in
@@ -97,6 +96,12 @@ do_checks () {
   failed=0
   verified=0
 
+  if [ ${debug_verbose} == "true" ]; then
+    echo "function \"${FUNCNAME}\" - debug:"
+    echo "  Binaries to check: ${checks[@]}"
+    echo
+  fi
+
   for binary in ${checks[@]}; do
     checksum ${binary}
 
@@ -113,11 +118,10 @@ do_checks () {
 
   # Debug
   if [ ${debug_verbose} == "true" ]; then
-    echo "function \"${FUNCNAME}\" - debug:"
-    echo "  #failed = ${failed}"
-    echo "  failed_binaries[@] = ${failed_binaries[@]}"
-    echo "  failed_packages[@] = ${failed_packages[@]}"
-    echo "  #verified = ${verified}"
+    echo "  #failed              = ${failed}"
+    echo "  failed_binaries[@]   = ${failed_binaries[@]}"
+    echo "  failed_packages[@]   = ${failed_packages[@]}"
+    echo "  #verified            = ${verified}"
     echo "  verified_binaries[@] = ${verified_binaries[@]}"
     echo "  verified_packages[@] = ${verified_packages[@]}"
     echo
@@ -141,18 +145,18 @@ output () {
 
   # Debug
   if [ ${debug_verbose} == "true" ] ; then
-    echo "function ${FUNCNAME} () - debug:"
-    echo "  nagios_error = ${nagios_error}"
     echo
+    echo "function \"${FUNCNAME}\" - debug:"
+    echo "  nagios_error = ${nagios_error}"
   fi
 
   return ${nagiso_error}
 }
 
 debug_output () {
+
   if [ ${debug} == "true" ]; then
-    echo "function ${FUNCNAME} () - debug:"
-    echo
+    echo "function \"${FUNCNAME}\" - debug:"
     echo "  Affcted binaries/packages:"
     count_failed=0
     for i in ${failed_binarys[@]}; do
