@@ -86,10 +86,10 @@ do_checks () {
   failed=0
   verified=0
 
-  for element in ${checks[@]}; do
-    eval "prog=(\${$element[@]})"
-
-    checksum ${prog[0]}
+  for binaries in ${checks[@]}; do
+   # eval "prog=(\${$element[@]})"
+    checksum ${binaries}
+   # checksum ${prog[0]}
 
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${prog[0]}
