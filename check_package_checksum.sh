@@ -115,14 +115,18 @@ do_checks () {
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
     if [ ${debug} == "true" ]; then
       echo
-      echo "Affcted binaries :"
+      echo "Affcted binaries/packages:"
+      count_failed=0
       for i in ${failed_binarys[@]}; do
-        echo "  ${i}"
+        echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
       done
+      echo
 
-      echo "Affected packages:"
-      for i in ${failed_packages[@]}; do
-        echo "  ${i}"
+      echo "Verified binarys/packages:"
+      count_verified=0
+      for i in ${verified_binaries[@]}; do
+        echo -e "  OK: ${verified_binaries[${count}]} matches ${verified_packages[${count}]}"
+        let count=count+1
       done
     fi
     exit 2
@@ -130,17 +134,12 @@ do_checks () {
     echo "OK: Package and binary checksum are identical"
     if [ ${debug} == "true" ]; then
       echo
-      echo "Checked binaries:"
+      echo "Checked binaries/packages:"
       count=0
       for i in ${verified_binaries[@]}; do
-        echo -e " OK: ${verified_binaries[${count}]} matches ${verified_packages[${count}]}"
+        echo -e "  OK: ${verified_binaries[${count}]} matches ${verified_packages[${count}]}"
         let count=count+1
       done
-
-      #echo
-      #for i in ${verified_packages[@]}; do
-      #  echo "  ${i}"
-      #done
     fi
     exit 0
   fi
