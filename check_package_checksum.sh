@@ -98,9 +98,12 @@ do_checks () {
   failed=0
   verified=0
 
-  if [ ${debug_verbose} == "true" ]; then
-    echo "function \"${FUNCNAME}\" - verbose debug:"
-    echo "  Binaries to check: ${checks[@]}"
+  if [ ${debug} == "true" ]; then
+    echo "function \"${FUNCNAME}\" - debug:"
+    echo "  Binaries to check:"
+    for i in ${checks[@]}; do
+      echo "     ${i}"
+    done
     echo
   fi
 
