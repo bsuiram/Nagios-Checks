@@ -107,6 +107,7 @@ do_checks () {
 }
 
 output () {
+  echo "failed_binarys: ${#failed_binarys[0]} blatti blattblatt"
   if [ ${#failed_binarys[0]} -eq 0 ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
     for i in ${failed_binarys[@]}; do
