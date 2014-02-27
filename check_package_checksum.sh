@@ -234,11 +234,10 @@ output () {
         echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
     done
     nagios_error=2
+  elif [ ${#orphaned_files[@]} -ne "0" ]; then
+    echo "WARNING: Trying to checksum orphaned files, run \"$(basename $0) --verbose\" for more info"
+    nagios_error=1
   else
-    if [ ${#orphaned_files[@]} -ne "0" ]; then
-      echo "WARNING: Trying to checksum orphaned files, run \"$(basename $0) --verbose\" for more info"
-      nagios_error=1
-    fi
     echo "OK: Package and binary checksum are identical"
     nagios_error=0
   fi
