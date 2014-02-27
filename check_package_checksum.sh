@@ -5,7 +5,7 @@ checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/u
 
 # Debug true/false
 debug="true"
-debug_verbose="true"
+debug_verbose="false"
 
 
 check_distro () {
@@ -235,7 +235,7 @@ output () {
     done
     nagios_error=2
   elif [ ${#orphaned_files[@]} -ne "0" ]; then
-    echo "WARNING: Trying to checksum orphaned files, run \"$(basename $0) --verbose\" for more info"
+    echo "WARNING: Trying to checksum orphaned files, run \"$(basename $0) --debug\" for more info"
     nagios_error=1
   else
     echo "OK: Package and binary checksum are identical"
