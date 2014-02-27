@@ -13,10 +13,10 @@ debug_verbose="false"
 
 while getopts "dvh" OPTION; do
   case ${OPTION} in
-    d )
+    d|debug )
       debug="true"
       ;;
-    v )
+    v|verbose )
       debug="true"
       debug_verbose="true"
       ;;
