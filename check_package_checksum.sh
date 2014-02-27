@@ -2,9 +2,9 @@
 
 # Array of binaries to check
 checks=( \
-'/tmp/orphaned' '/bin/bash' '/usr/sbin/sshd' '/bin/login'\
-'/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' '/home/marius/blatti'\
-'/nfs-home/home/marius/orphaned'\
+'/tmp/orphaned' '/bin/bash' '/usr/sbin/sshd' '/bin/login' \
+'/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' '/home/marius/blatti' \
+'/nfs-home/home/marius/orphaned' \
 )
 
 # Debug true/false
