@@ -101,8 +101,10 @@ get_package_name () {
      echo "function \"${FUNCNAME}\" - debug:"
      if [ ${package_name} == "orphaned" ]; then
        echo "  \"${file}\" is orphaned, no package claims to own it."
+       echo
      else
        echo "  \"${file}\" is claimend by \"${package_name}\""
+       echo
      fi
    fi
 
