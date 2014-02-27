@@ -232,6 +232,8 @@ do_checks () {
 
 output () {
 
+  nagios_error=0
+
   if [ ${#failed_binarys[@]} -ne "0" ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
     for i in ${failed_binarys[@]}; do
@@ -243,7 +245,6 @@ output () {
     nagios_error=1
   else
     echo "OK: Package and binary checksum are identical"
-    nagios_error=0
   fi
 
   # Debug
@@ -258,21 +259,21 @@ output () {
 }
 
 debug_output () {
+  local count_failed=0
+  local count_verified=0
 
   if [ ${debug} == "true" ]; then
     echo "function \"${FUNCNAME}\" - debug:"
     echo "  Affcted binaries/packages:"
-    count_failed=0
     for i in ${failed_binarys[@]}; do
-      echo "    ${failed_binarys[${count_failed}]} doen not match ${failed_packages[${count_failed}]}"
+      echo "    \"${failed_binarys[${count_failed}]}\" does not match \"${failed_packages[${count_failed}]}\""
       let count_failed=count_failed+1
     done
     echo
 
     echo "  Verified binarys/packages:"
-    count_verified=0
     for i in ${verified_binaries[@]}; do
-      echo "    ${verified_binaries[${count_verified}]} matches ${verified_packages[${count_verified}]}"
+      echo "    \"${verified_binaries[${count_verified}]}\" matches \"${verified_packages[${count_verified}]}\""
       let count_verified=count_verified+1
     done
     echo
