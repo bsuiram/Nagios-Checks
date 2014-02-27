@@ -106,7 +106,11 @@ get_package_name () {
      fi
    fi
 
-   return ${package_name}
+   if [ ${package_name} == "orphaned" ]; then
+     return 1
+   else
+     return 0
+   fi
 }
 
 checksum () {
