@@ -123,6 +123,12 @@ checksum () {
   local binary_path=${1}
 
   package_name=$(get_package_name ${binary_file})
+  if [ $? -ne 0 ]; then
+    echo "Error: \"${FUNCNAME}\" failed to get correct package name from \"get_package_name\""
+    echo "  Name returned was: \"${package_name}\""
+    echo
+    return 1
+  fi
 
   case ${pkgmgr} in
     dpkg )
