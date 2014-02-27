@@ -11,33 +11,33 @@ checks=( \
 debug="false"
 debug_verbose="false"
 
-while getopts "dvh" OPTION; do
-  case ${OPTION} in
-    d|debug )
-      debug="true"
-      ;;
-    v|verbose )
-      debug="true"
-      debug_verbose="true"
-      ;;
-    h|?|* )
-      usage
-      exit 0
-      ;;
-  esac
-done
-
 usage () {
   cat << EOF
   ${0} checks checksums for files against local package database
   Usage: ${0} [-dvh]
 
     Options:
-      -d = debug
-      -v = verbose (impies -d)
-      -h = Prints this list
+      -d | --debug : debug
+      -v | --verbose : verbose (impies -d)
+      -h | --help : Prints this list
 EOF
 }
+
+while getopts dvh option; do
+  case ${option} in
+    d )
+      debug="true"
+      ;;
+    v )
+      debug="true"
+      debug_verbose="true"
+      ;;
+    h|* )
+      usage
+      exit 1
+      ;;
+  esac
+done
 
 check_distro () {
   # Get distro and determine what checksum to use
@@ -308,6 +308,7 @@ debug_output () {
 
   return 0
 }
+
 
 check_distro
 check_file_exists
