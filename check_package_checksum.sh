@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Array of binaries to check
-checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' '/home/marius/blatti' )
+checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' '/home/marius/blatti' '/nfs-home/home/marius/orphaned' )
 
 # Debug true/false
 debug="true"
@@ -74,7 +74,7 @@ check_file_exists () {
 get_package_name () {
   # Check if file is handled by package manager
   # Returns package name if claimd by package
-  # Returns "orpahned" if not
+  # Returns 1 and sets ${package_name} = "orpahned" if not
   file=$1
 
   case ${pkgmgr} in
@@ -109,6 +109,7 @@ get_package_name () {
    fi
 
    if [ ${package_name} == "orphaned" ]; then
+     orphaned_files+=( ${file} )
      return 1
    else
      return 0
@@ -172,16 +173,19 @@ do_checks () {
 
   for binary in ${checks[@]}; do
     get_package_name ${binary}
-    checksum ${binary} ${package_name}
-
     if [ $? -ne 0 ]; then
-      failed_binarys[${failed}]=${binary}
-      failed_packages[${failed}]=${package_name}
-      failed=$((failed+1))
+      echo "Error: Skiping checksuming of: \"${binary}\""
     else
-      verified_binaries[${verified}]=${binary}
-      verified_packages[${verified}]=${package_name}
-      verified=$((verified+1))
+      checksum ${binary} ${package_name}
+      if [ $? -ne 0 ]; then
+        failed_binarys[${failed}]=${binary}
+        failed_packages[${failed}]=${package_name}
+        failed=$((failed+1))
+      else
+        verified_binaries[${verified}]=${binary}
+        verified_packages[${verified}]=${package_name}
+        verified=$((verified+1))
+      fi
     fi
   done
 
@@ -208,7 +212,12 @@ do_checks () {
     done
     echo
     echo "  verified_packages[@] ="
-    for i in ${verified_packages[@]};do
+    for i in ${verified_packages[@]}; do
+      echo "    ${i}"
+    done
+    echo
+    echo " orhpaned_files[@] ="
+    for i in ${orphaned_files[@]}; do
       echo "    ${i}"
     done
     echo
@@ -226,6 +235,10 @@ output () {
     done
     nagios_error=2
   else
+    if [ ${#orphaned_files[@]} -ne "0" ]; then
+      echo "WARNING: Trying to checksum orphaned files, run \"$(basename $0) --verbose\" for more info"
+      nagios_error=1
+    fi
     echo "OK: Package and binary checksum are identical"
     nagios_error=0
   fi
