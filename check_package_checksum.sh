@@ -116,19 +116,13 @@ get_package_name () {
 }
 
 checksum () {
-  # Takes 1 argument;
+  # Takes 2 arguments;
   #  1) path from pseudo_binary_name array element
+  #  2) package_name from get_package_name()
   #  Returns: 0 if checksums are identical, and 1 if they differ.
 
   local binary_path=${1}
-
-  package_name=$(get_package_name ${binary_file})
-  if [ $? -ne 0 ]; then
-    echo "Error: \"${FUNCNAME}\" failed to get correct package name from \"get_package_name\""
-    echo "  Name returned was: \"${package_name}\""
-    echo
-    return 1
-  fi
+  package_name=${2}
 
   case ${pkgmgr} in
     dpkg )
@@ -177,7 +171,8 @@ do_checks () {
   local verified=0
 
   for binary in ${checks[@]}; do
-    checksum ${binary}
+    get_package_name ${binary}
+    checksum ${binary} ${package_name}
 
     if [ $? -ne 0 ]; then
       failed_binarys[${failed}]=${binary}
