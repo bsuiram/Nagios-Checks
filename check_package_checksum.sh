@@ -268,7 +268,7 @@ output () {
     done
     nagios_error=2
   elif [ ${#orphaned_files[@]} -ne "0" ]; then
-    echo "WARNING: Trying to checksum orphaned files, run \"$(basename $0) --debug\" for more info"
+    echo "WARNING: Trying to checksum orphaned files, run \"$(basename $0) -d\" for more info"
     nagios_error=1
   else
     echo "OK: Package and file checksum are identical"
