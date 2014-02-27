@@ -157,9 +157,9 @@ checksum () {
   if [ ${debug_verbose} == "true" ]; then
     echo "function \"${FUNCNAME}\" - verbose debug:"
     echo "  Package name     = ${package_name}"
-    echo "  Binary path      = ${binary_path}"
+    echo "  File path      = ${binary_path}"
     echo "  Package checksum = ${package_checksum}"
-    echo "  Binary checksum  = ${binary_checksum}"
+    echo "  File checksum  = ${binary_checksum}"
     echo
   fi
 
@@ -234,10 +234,10 @@ output () {
 
   nagios_error=0
 
-  if [ ${#failed_binarys[@]} -ne "0" ]; then
+  if [ ${#failed_binaries[@]} -ne "0" ]; then
     echo "CRITICAL: Verification of binary vs. package checksum failed!"
-    for i in ${failed_binarys[@]}; do
-        echo " ${failed_binarys[${count}]} doen not match ${failed_packages[${count}]}"
+    for i in ${failed_binaries[@]}; do
+        echo " ${failed_binaries[${count}]} doen not match ${failed_packages[${count}]}"
     done
     nagios_error=2
   elif [ ${#orphaned_files[@]} -ne "0" ]; then
@@ -265,8 +265,8 @@ debug_output () {
   if [ ${debug} == "true" ]; then
     echo "function \"${FUNCNAME}\" - debug:"
     echo "  Affcted binaries/packages:"
-    for i in ${failed_binarys[@]}; do
-      echo "    \"${failed_binarys[${count_failed}]}\" does not match \"${failed_packages[${count_failed}]}\""
+    for i in ${failed_binaries[@]}; do
+      echo "    \"${failed_binaries[${count_failed}]}\" does not match \"${failed_packages[${count_failed}]}\""
       let count_failed=count_failed+1
     done
     echo
