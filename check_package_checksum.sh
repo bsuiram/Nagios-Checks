@@ -257,7 +257,7 @@ debug_output () {
   return 0
 }
 
-#check_distro
+check_distro
 #check_file_exists
 #do_checks
 #debug_output
