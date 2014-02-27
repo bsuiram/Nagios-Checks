@@ -121,7 +121,8 @@ checksum () {
   #  Returns: 0 if checksums are identical, and 1 if they differ.
 
   local binary_path=${1}
-  local package_name=$(get_package_name ${binary_file})
+
+  package_name=$(get_package_name ${binary_file})
 
   case ${pkgmgr} in
     dpkg )
