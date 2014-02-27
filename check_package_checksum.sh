@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Array of binaries to check
+# Array of files to check
 checks=( \
 '/tmp/orphaned' '/bin/bash' '/usr/sbin/sshd' '/bin/login' \
 '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' '/home/marius/blatti' \
@@ -124,29 +124,29 @@ get_package_name () {
 
 checksum () {
   # Takes 2 arguments;
-  #  1) path from pseudo_binary_name array element
+  #  1) path from pseudo_file_name array element
   #  2) package_name from get_package_name()
   #  Returns: 0 if checksums are identical, and 1 if they differ.
 
-  local binary_path=${1}
+  local file_path=${1}
   package_name=${2}
 
   case ${pkgmgr} in
     dpkg )
       # Remove first char from path (/)
       # as ${package_name}.md5sums contains path without starting /
-      binary_path_mod=${binary_path:1:${#binary_path}}
+      file_path_mod=${file_path:1:${#file_path}}
 
-      package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${binary_path_mod}$" | awk '{print $1}')
-      binary_checksum=$(md5sum ${binary_path} | awk '{print $1}')
+      package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${file_path_mod}$" | awk '{print $1}')
+      file_checksum=$(md5sum ${file_path} | awk '{print $1}')
       ;;
     rpm_sha256 )
-       package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${binary_path} " | awk '{print $4}')
-       binary_checksum=$(sha256sum ${binary_path} | awk '{print $1}')
+       package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
+       file_checksum=$(sha256sum ${file_path} | awk '{print $1}')
       ;;
     rpm_md5 )
-       package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${binary_path} " | awk '{print $4}')
-       binary_checksum=$(md5sum ${binary_path} | awk '{print $1}')
+       package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
+       file_checksum=$(md5sum ${file_path} | awk '{print $1}')
       ;;
     * )
       echo "Wat?! function \"${FUNCNAME}\" failed hard, this should NOT happen.."
@@ -157,13 +157,13 @@ checksum () {
   if [ ${debug_verbose} == "true" ]; then
     echo "function \"${FUNCNAME}\" - verbose debug:"
     echo "  Package name     = ${package_name}"
-    echo "  File path      = ${binary_path}"
+    echo "  File path      = ${file_path}"
     echo "  Package checksum = ${package_checksum}"
-    echo "  File checksum  = ${binary_checksum}"
+    echo "  File checksum  = ${file_checksum}"
     echo
   fi
 
-  if [ ${binary_checksum} == ${package_checksum} ]; then
+  if [ ${file_checksum} == ${package_checksum} ]; then
     return 0
   else
     return 1
@@ -177,16 +177,16 @@ do_checks () {
   local failed=0
   local verified=0
 
-  for binary in ${checks[@]}; do
-    get_package_name ${binary}
+  for file in ${checks[@]}; do
+    get_package_name ${file}
     if [ $? -eq 0 ]; then
-      checksum ${binary} ${package_name}
+      checksum ${file} ${package_name}
       if [ $? -ne 0 ]; then
-        failed_binarys[${failed}]=${binary}
+        failed_files[${failed}]=${file}
         failed_packages[${failed}]=${package_name}
         failed=$((failed+1))
       else
-        verified_binaries[${verified}]=${binary}
+        verified_files[${verified}]=${file}
         verified_packages[${verified}]=${package_name}
         verified=$((verified+1))
       fi
@@ -198,8 +198,8 @@ do_checks () {
     echo "function \"${FUNCNAME}\" - verbose debug:"
     echo "  #failed              = ${failed}"
     echo
-    echo "  failed_binaries[@]   ="
-    for i in ${failed_binaries[@]}; do
+    echo "  failed_files[@]   ="
+    for i in ${failed_files[@]}; do
       echo "    ${i}"
     done
     echo
@@ -210,8 +210,8 @@ do_checks () {
     echo
     echo "  #verified            = ${verified}"
     echo
-    echo "  verified_binaries[@] ="
-    for i in ${verified_binaries[@]}; do
+    echo "  verified_files[@] ="
+    for i in ${verified_files[@]}; do
       echo "    ${i}"
     done
     echo
@@ -234,17 +234,17 @@ output () {
 
   nagios_error=0
 
-  if [ ${#failed_binaries[@]} -ne "0" ]; then
-    echo "CRITICAL: Verification of binary vs. package checksum failed!"
-    for i in ${failed_binaries[@]}; do
-        echo " ${failed_binaries[${count}]} doen not match ${failed_packages[${count}]}"
+  if [ ${#failed_files[@]} -ne "0" ]; then
+    echo "CRITICAL: Verification of file vs. package checksum failed!"
+    for i in ${failed_files[@]}; do
+        echo " ${failed_files[${count}]} doen not match ${failed_packages[${count}]}"
     done
     nagios_error=2
   elif [ ${#orphaned_files[@]} -ne "0" ]; then
     echo "WARNING: Trying to checksum orphaned files, run \"$(basename $0) --debug\" for more info"
     nagios_error=1
   else
-    echo "OK: Package and binary checksum are identical"
+    echo "OK: Package and file checksum are identical"
   fi
 
   # Debug
@@ -264,16 +264,16 @@ debug_output () {
 
   if [ ${debug} == "true" ]; then
     echo "function \"${FUNCNAME}\" - debug:"
-    echo "  Affcted binaries/packages:"
-    for i in ${failed_binaries[@]}; do
-      echo "    \"${failed_binaries[${count_failed}]}\" does not match \"${failed_packages[${count_failed}]}\""
+    echo "  Affcted files/packages:"
+    for i in ${failed_files[@]}; do
+      echo "    \"${failed_files[${count_failed}]}\" does not match \"${failed_packages[${count_failed}]}\""
       let count_failed=count_failed+1
     done
     echo
 
-    echo "  Verified binarys/packages:"
-    for i in ${verified_binaries[@]}; do
-      echo "    \"${verified_binaries[${count_verified}]}\" matches \"${verified_packages[${count_verified}]}\""
+    echo "  Verified files/packages:"
+    for i in ${verified_files[@]}; do
+      echo "    \"${verified_files[${count_verified}]}\" matches \"${verified_packages[${count_verified}]}\""
       let count_verified=count_verified+1
     done
     echo
