@@ -5,7 +5,7 @@ checks=( '/bin/bash' '/usr/sbin/sshd' '/bin/login' '/bin/su' '/usr/bin/sudo' '/u
 
 # Debug true/false
 debug="true"
-debug_verbose="false"
+debug_verbose="true"
 
 
 check_distro () {
