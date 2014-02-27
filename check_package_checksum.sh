@@ -102,7 +102,8 @@ get_package_name () {
      if [ ${package_name} == "orphaned" ]; then
        echo "  \"${file}\" is orphaned, no package claims to own it."
        echo
-     else
+     fi
+   if [ ${debug_verbose} == "true" ]; then
        echo "  \"${file}\" is claimend by \"${package_name}\""
        echo
      fi
@@ -173,9 +174,7 @@ do_checks () {
 
   for binary in ${checks[@]}; do
     get_package_name ${binary}
-    if [ $? -ne 0 ]; then
-      echo "Error: Skiping checksuming of: \"${binary}\""
-    else
+    if [ $? -eq 0 ]; then
       checksum ${binary} ${package_name}
       if [ $? -ne 0 ]; then
         failed_binarys[${failed}]=${binary}
