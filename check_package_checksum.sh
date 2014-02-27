@@ -92,7 +92,7 @@ get_package_name () {
       ;;
     * )
       echo "Oh lordi lord! function \"${FUNCNAME}\" failed hard, there may be not be a god!"
-      package_name="orphaned"
+      exit 2
       ;;
   esac
 
@@ -264,10 +264,8 @@ debug_output () {
 }
 
 check_distro
-#check_file_exists
-#do_checks
-#debug_output
-#output
-#exit ${nagios_error}
-
-get_package_name "/bin/bash"
+check_file_exists
+do_checks
+debug_output
+output
+exit ${nagios_error}
