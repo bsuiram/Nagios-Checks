@@ -75,7 +75,7 @@ get_package_name () {
   # Check if file is handled by package manager
   # Returns package name if claimd by package
   # Returns "orpahned" if not
-  local file=$1
+  file=$1
 
   case ${pkgmgr} in
     dpkg )
