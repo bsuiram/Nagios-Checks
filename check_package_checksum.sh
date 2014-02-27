@@ -257,9 +257,11 @@ debug_output () {
   return 0
 }
 
-check_distro
-check_file_exists
-do_checks
-debug_output
-output
-exit ${nagios_error}
+#check_distro
+#check_file_exists
+#do_checks
+#debug_output
+#output
+#exit ${nagios_error}
+
+get_package_name "/bin/bash"
