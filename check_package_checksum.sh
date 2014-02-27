@@ -98,12 +98,13 @@ get_package_name () {
 
   # Debug
    if [ ${debug} == "true" ]; then
-     echo "function \"${FUNCNAME}\" - debug:"
      if [ ${package_name} == "orphaned" ]; then
+       echo "function \"${FUNCNAME}\" - debug:"
        echo "  \"${file}\" is orphaned, no package claims to own it."
        echo
      fi
    if [ ${debug_verbose} == "true" ]; then
+       echo "function \"${FUNCNAME}\" - debug:"
        echo "  \"${file}\" is claimend by \"${package_name}\""
        echo
      fi
