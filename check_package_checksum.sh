@@ -8,9 +8,36 @@ checks=( \
 )
 
 # Debug true/false
-debug="true"
+debug="false"
 debug_verbose="false"
 
+while getopts "dvh" OPTION; do
+  case ${OPTION} in
+    d )
+      debug="true"
+      ;;
+    v )
+      debug="true"
+      debug_verbose="true"
+      ;;
+    h|?|* )
+      usage
+      exit 0
+      ;;
+  esac
+done
+
+usage () {
+  cat << EOF
+  ${0} checks checksums for files against local package database
+  Usage: ${0} [-dvh]
+
+    Options:
+      -d = debug
+      -v = verbose (impies -d)
+      -h = Prints this list
+EOF
+}
 
 check_distro () {
   # Get distro and determine what checksum to use
