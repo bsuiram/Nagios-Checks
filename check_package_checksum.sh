@@ -260,11 +260,13 @@ do_checks () {
 output () {
 
   nagios_error=0
+  local count=0
 
   if [ ${#failed_files[@]} -ne "0" ]; then
     echo "CRITICAL: Verification of file vs. package checksum failed!"
     for i in ${failed_files[@]}; do
         echo " ${failed_files[${count}]} doen not match ${failed_packages[${count}]}"
+        let count=count+1
     done
     nagios_error=2
   elif [ ${#orphaned_files[@]} -ne "0" ]; then
