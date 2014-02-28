@@ -75,7 +75,9 @@ check_distro () {
 
 check_file_exists () {
   # Check if file exists, if not, delete it from array.
-  index=0
+
+  local index=0
+
   for file in ${checks[@]}; do
     if [ ! -f ${file} ]; then
       skiped_files[${index}]=${file}
@@ -106,7 +108,7 @@ get_package_name () {
   # Check if file is handled by package manager
   # Returns package name if claimd by package
   # Returns 1 and sets ${package_name} = "orpahned" if not
-  file=$1
+  local file=${1}
 
   case ${pkgmgr} in
     dpkg )
