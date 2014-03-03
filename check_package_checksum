@@ -266,7 +266,7 @@ output () {
   local count=0
 
   if [ ${#failed_files[@]} -ne "0" ]; then
-    echo "CRITICAL: Verification of file vs. package checksum failed!"
+    echo "CRITICAL: File(s) did not match package checksum! run \"${0} -d\" to investigate."
     for i in ${failed_files[@]}; do
         echo "${failed_files[${count}]} does not match ${failed_packages[${count}]}"
         let count=count+1
