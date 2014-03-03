@@ -125,7 +125,7 @@ get_package_name () {
       fi
       ;;
     * )
-      echo "Oh lordi lord! function \"${FUNCNAME}\" failed hard, there may be not be a god!"
+      echo "Oh lordi lord! function \"${FUNCNAME}\" failed, no such package manager"
       exit 2
       ;;
   esac
@@ -179,7 +179,7 @@ checksum () {
        file_checksum=$(md5sum ${file_path} | awk '{print $1}')
       ;;
     * )
-      echo "Wat?! function \"${FUNCNAME}\" failed hard, this should NOT happen.."
+      echo "Wat?! function \"${FUNCNAME}\" failed, \${pkgmgr} nok known."
       exit 2
       ;;
   esac
@@ -202,7 +202,7 @@ checksum () {
 
 do_checks () {
   # Itterates ${checks} array over checsum() function
-  # and populates failed and verified arrays
+  # and populates failed and verified arrays.
 
   local failed=0
   local verified=0
