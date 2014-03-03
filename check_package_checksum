@@ -266,14 +266,14 @@ output () {
   local count=0
 
   if [ ${#failed_files[@]} -ne "0" ]; then
-    echo "CRITICAL: File(s) did not match package checksum! Run \"$(basename ${0}) -d\" to investigate."
+    echo "CRITICAL: File(s) did not match package checksum! Run \"${0} -d\" to investigate."
     for i in ${failed_files[@]}; do
         echo "${failed_files[${count}]} does not match ${failed_packages[${count}]}"
         let count=count+1
     done
     nagios_error=2
   elif [ ${#orphaned_files[@]} -ne "0" ]; then
-    echo "WARNING: Trying to checksum orphaned files, run \"$(basename ${0}) -d\" for more info"
+    echo "WARNING: Trying to checksum orphaned files, run \"${0} -d\" for more info"
     nagios_error=1
   else
     echo "OK: Package and file checksum are identical"
