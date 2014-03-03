@@ -4,7 +4,7 @@
 checks=( \
 '/tmp/orphaned' '/bin/bash' '/usr/sbin/sshd' '/bin/login' \
 '/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' '/home/marius/blatti' \
-'/nfs-home/home/marius/orphaned' \
+'/nfs-home/home/marius/orphaned' '/bin/rpm' '/usr/bin/yum'  '/usr/bin/dpkg' '/usr/bin/apt-get' \
 )
 
 # Debug true/false
