@@ -48,7 +48,7 @@ check_distro () {
     Ubuntu|Debian )
       pkgmgr="dpkg"
       ;;
-    RedHat|CentOS|Scientific )
+    RedHatEnterpriseServer|CentOS|Scientific )
       if [ ${distro_majrelease} -le 5 ]; then
         pkgmgr="rpm_md5"
       else
