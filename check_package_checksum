@@ -48,12 +48,14 @@ check_distro () {
   case ${distro} in
     Ubuntu|Debian )
       pkgmgr="dpkg"
+      pkgmgr_digest="md5sum"
       ;;
     RedHatEnterpriseServer|CentOS|Scientific )
+      pkgmgr="rpm"
       if [ ${distro_majrelease} -le 5 ]; then
-        pkgmgr="rpm_md5"
+        pkgmgr_digest="md5sum"
       else
-        pkgmgr="rpm_sha256"
+        pkgmgr_digest="sha256sum"
       fi
       ;;
     * )
@@ -118,7 +120,7 @@ get_package_name () {
         package_name="orphaned"
       fi
       ;;
-    rpm_* )
+    rpm )
       package_name=$(rpm -qf ${file}) 2> /dev/null
       if [ $? -ne 0 ]; then
         package_name="orphaned"
@@ -137,7 +139,7 @@ get_package_name () {
        echo "  \"${file}\" is orphaned, no package claims to own it."
        echo
      fi
-   if [ ${debug_verbose} == "true" ]; then
+     if [ ${debug_verbose} == "true" ]; then
        echo "function \"${FUNCNAME}\" - debug:"
        echo "  \"${file}\" is claimend by \"${package_name}\""
        echo
@@ -150,6 +152,12 @@ get_package_name () {
    else
      return 0
    fi
+}
+
+rpm_check_file_digest () {
+  #sjekker om prelink eksisterer og om filen ligger i prelink.cache 
+  # og om den gjøre det så sumer vi via prelink -y
+  file_path=${1}
 }
 
 checksum () {
@@ -166,19 +174,13 @@ checksum () {
       # Remove first char from path (/)
       # as ${package_name}.md5sums contains path without starting /
       file_path_mod=${file_path:1:${#file_path}}
-
       package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${file_path_mod}$" | awk '{print $1}')
       file_checksum=$(md5sum ${file_path} | awk '{print $1}')
       ;;
-    rpm_sha256 )
+    rpm )
       # Rhel (and clones) uses prelink, we have to use prelink -y to get correct checksums.
       package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
-      file_checksum=$(prelink -y ${file_path} | sha256sum | awk '{print $1}')
-      ;;
-    rpm_md5 )
-      # Rhel (and clones) uses prelink, we have to use prelink -y to get correct checksums.
-      package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
-      file_checksum=$(prelink -y ${file_path} | md5sum | awk '{print $1}')
+      file_checksum=$(prelink -y ${file_path} | ${pkgmgr_digest}} | awk '{print $1}')
       ;;
     * )
       echo "Wat?! function \"${FUNCNAME}\" failed, \${pkgmgr} nok known."
@@ -203,7 +205,7 @@ checksum () {
 }
 
 do_checks () {
-  # Itterates ${checks} array over checsum() function
+  # Itterates ${checks} array over checksum() function
   # and populates failed and verified arrays.
 
   local failed=0
