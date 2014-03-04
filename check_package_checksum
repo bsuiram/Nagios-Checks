@@ -171,12 +171,14 @@ checksum () {
       file_checksum=$(md5sum ${file_path} | awk '{print $1}')
       ;;
     rpm_sha256 )
-       package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
-       file_checksum=$(prelink -y ${file_path} | sha256sum | awk '{print $1}')
+      # Rhel (and clones) uses prelink, we have to use prelink -y to get correct checksums.
+      package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
+      file_checksum=$(prelink -y ${file_path} | sha256sum | awk '{print $1}')
       ;;
     rpm_md5 )
-       package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
-       file_checksum=$(prelink -y ${file_path} | md5sum | awk '{print $1}')
+      # Rhel (and clones) uses prelink, we have to use prelink -y to get correct checksums.
+      package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
+      file_checksum=$(prelink -y ${file_path} | md5sum | awk '{print $1}')
       ;;
     * )
       echo "Wat?! function \"${FUNCNAME}\" failed, \${pkgmgr} nok known."
