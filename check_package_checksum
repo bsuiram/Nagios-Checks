@@ -186,12 +186,15 @@ checksum () {
       file_checksum=$(md5sum ${file_path} | awk '{print $1}')
       ;;
     rpm )
-      # Rhel (and clones) uses prelink, we have to use prelink -y to get correct checksums.
+      # Rhel (and clones) uses prelink, we have to use prelink -y to get correct checksums if enabled.
       local package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
-      local in_prelink_cache=$(prelink -p | grep ${file_path})
 
       if [ ${prelink_enabled} == "true" ]; then
-        if [[ "${file_path}" =~ ^${in_prelink_cache} ]]; then
+        local in_prelink_cache=$(prelink -p | egrep "^${file_path}:|^${file_path} ")
+        if [[ "${in_prelink_cache}" =~ "*not prelinkable*" ]]; then
+          local prelink_match="not prelinkable"
+          file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
+        elif [[ "${in_prelink_cache}" =~ "^${file_path}:$" ]]; then
           local prelink_match="true"
           file_checksum=$(prelink -y ${file_path} | ${pkgmgr_digest} | awk '{print $1}')
         else
