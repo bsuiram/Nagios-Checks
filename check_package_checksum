@@ -158,6 +158,7 @@ rpm_check_file_digest () {
   #sjekker om prelink eksisterer og om filen ligger i prelink.cache 
   # og om den gjøre det så sumer vi via prelink -y
   file_path=${1}
+  
 }
 
 checksum () {
@@ -180,7 +181,7 @@ checksum () {
     rpm )
       # Rhel (and clones) uses prelink, we have to use prelink -y to get correct checksums.
       package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
-      file_checksum=$(prelink -y ${file_path} | ${pkgmgr_digest}} | awk '{print $1}')
+      file_checksum=$(prelink -y ${file_path} | ${pkgmgr_digest} | awk '{print $1}')
       ;;
     * )
       echo "Wat?! function \"${FUNCNAME}\" failed, \${pkgmgr} nok known."
