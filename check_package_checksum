@@ -57,6 +57,13 @@ check_distro () {
       else
         pkgmgr_digest="sha256sum"
       fi
+      # Check if prelink is enabled.
+      check_prelink=$(awk '/PRELINKING/ {print $1}' /etc/sysconfig/prelink | cut -d "=" -f2 )
+      if [ ${check_prelink} == "yes" ]; then
+        prelink_enabled="true"
+      else
+        prelink_enabled="false"
+      fi
       ;;
     * )
       echo "Unknown Distro: Please fix me.. im broken.."
@@ -67,9 +74,10 @@ check_distro () {
   if [ ${debug} == "true" ]; then
     echo
     echo "function \"${FUNCNAME}\" - debug:"
-    echo "  Distro        = ${distro}"
-    echo "  Major release = ${distro_majrelease}"
-    echo "  Checksum util = \"${pkgmgr}\""
+    echo "  Distro          = ${distro}"
+    echo "  Major release   = ${distro_majrelease}"
+    echo "  Checksum util   = \"${pkgmgr}\""
+    echo "  Prelink enabled = \"${prelink_enabled}\""
     echo
   fi
 
@@ -157,8 +165,7 @@ get_package_name () {
 rpm_check_file_digest () {
   #sjekker om prelink eksisterer og om filen ligger i prelink.cache 
   # og om den gjøre det så sumer vi via prelink -y
-  file_path=${1}
-  
+  local file_path=${1}
 }
 
 checksum () {
@@ -168,7 +175,7 @@ checksum () {
   #  Returns: 0 if checksums are identical, and 1 if they differ.
 
   local file_path=${1}
-  package_name=${2}
+  local package_name=${2}
 
   case ${pkgmgr} in
     dpkg )
@@ -180,22 +187,32 @@ checksum () {
       ;;
     rpm )
       # Rhel (and clones) uses prelink, we have to use prelink -y to get correct checksums.
-      package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
-      file_checksum=$(prelink -y ${file_path} | ${pkgmgr_digest} | awk '{print $1}')
+      local package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
+      local in_prelink_cache=$(prelink -p | grep ${file_path})
+
+      if [ ${prelink_enabled} == "true" ]; then
+        if [[ "${file_path}" =~ ^${in_prelink_cache} ]]; then
+          local prelink_match="true"
+          file_checksum=$(prelink -y ${file_path} | ${pkgmgr_digest} | awk '{print $1}')
+        else
+          local prelink_match="false"
+          file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
+        fi
+      fi
       ;;
     * )
-      echo "Wat?! function \"${FUNCNAME}\" failed, \${pkgmgr} nok known."
+      echo "Wat?! function \"${FUNCNAME}\" failed, \${pkgmgr} not known."
       exit 2
       ;;
   esac
 
   if [ ${debug_verbose} == "true" ]; then
     echo "function \"${FUNCNAME}\" - verbose debug:"
-    echo "  Package name     = ${package_name}"
-    echo "  File path      = ${file_path}"
-    echo "  Package checksum = ${package_checksum}"
-    echo "  File checksum  = ${file_checksum}"
-    echo
+    echo "  Package name          = ${package_name}"
+    echo "  File path             = ${file_path}"
+    echo "  Package checksum      = ${package_checksum}"
+    echo "  File checksum         = ${file_checksum}"
+    echo "  File in prelink cache = ${prelink_match}"
   fi
 
   if [ ${file_checksum} == ${package_checksum} ]; then
