@@ -3,9 +3,8 @@
 # Array of files to check
 checks=( \
 "/bin/bash" "/usr/sbin/sshd" '/bin/login' \
-'/bin/su' '/usr/bin/sudo' '/usr/sbin/httpd' \
+'/bin/su' '/usr/bin/sudo' '/usr/bin/yum' \
 '/bin/rpm' '/usr/bin/dpkg' '/usr/bin/apt-get' \
-'/usr/sbin/apache2' '/usr/bin/php5' "/boot/vmlinuz-$(uname -r)"\
 )
 
 # Debug true/false
@@ -18,13 +17,14 @@ usage () {
   Usage: ${0} [-dvh]
 
     Options:
-      -d | --debug : debug
-      -v | --verbose : verbose (implies -d)
-      -h | --help : Prints this list
+      -d : debug
+      -v : verbose (implies -d)
+      -f <file>
+      -h : Prints this list
 EOF
 }
 
-while getopts dvh option; do
+while getopts dvhp: option; do
   case ${option} in
     d )
       debug="true"
@@ -32,6 +32,9 @@ while getopts dvh option; do
     v )
       debug="true"
       debug_verbose="true"
+      ;;
+    p )
+      check_file=${OPTARG}
       ;;
     h|* )
       usage
