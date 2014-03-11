@@ -191,7 +191,7 @@ checksum () {
 
       if [ ${prelink_enabled} == "true" ]; then
         local in_prelink_cache=$(prelink -p | egrep "^${file_path}:|^${file_path} ")
-        if [[ ${in_prelink_cache} =~ *not\ prelinkable* ]]; then
+        if [[ ${in_prelink_cache} =~ *not.prelinkable* ]]; then
           #echo "dang... in_prelink_cache matches *not prelinkable*"
           local prelink_match="not prelinkable"
           file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
