@@ -191,14 +191,17 @@ checksum () {
 
       if [ ${prelink_enabled} == "true" ]; then
         local in_prelink_cache=$(prelink -p | egrep "^${file_path}:|^${file_path} ")
-        if [[ "${in_prelink_cache}" =~ "*not prelinkable*" ]]; then
+        if [[ "${in_prelink_cache}" =~ *not\ prelinkable* ]]; then
+          echo "dang... in_prelink_cache matches *not prelinkable*"
           local prelink_match="not prelinkable"
           file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
         elif [[ "${in_prelink_cache}" =~ "^${file_path}:$" ]]; then
+          echo "dang... file found in prelin cahce"
           local prelink_match="true"
           file_checksum=$(prelink -y ${file_path} | ${pkgmgr_digest} | awk '{print $1}')
         else
           local prelink_match="false"
+          echo "dang... file not found"
           file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
         fi
       fi
