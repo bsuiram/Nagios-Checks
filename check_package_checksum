@@ -213,6 +213,7 @@ checksum () {
     echo "  Package checksum      = ${package_checksum}"
     echo "  File checksum         = ${file_checksum}"
     echo "  File in prelink cache = ${prelink_match}"
+    echo "  In prelink cache      = ${in_prelink_cache}"
   fi
 
   if [ ${file_checksum} == ${package_checksum} ]; then
