@@ -19,7 +19,7 @@ usage () {
 
     Options:
       -d | --debug : debug
-      -v | --verbose : verbose (impiles -d)
+      -v | --verbose : verbose (implies -d)
       -h | --help : Prints this list
 EOF
 }
