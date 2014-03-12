@@ -14,17 +14,17 @@ debug_verbose="false"
 usage () {
   cat << EOF
   ${0} checks checksums for files against local package database
-  Usage: ${0} [-dvh]
+  Usage: ${0} [-dvh] -p <file>
 
     Options:
       -d : debug
       -v : verbose (implies -d)
-      -f <file>
+      -f <file>: list of files to check
       -h : Prints this list
 EOF
 }
 
-while getopts dvhp: option; do
+while getopts dvhf: option; do
   case ${option} in
     d )
       debug="true"
@@ -33,8 +33,9 @@ while getopts dvhp: option; do
       debug="true"
       debug_verbose="true"
       ;;
-    p )
+    f )
       check_file=${OPTARG}
+      checks=$(cat ${check_file}) # needs sanity check..
       ;;
     h|* )
       usage
