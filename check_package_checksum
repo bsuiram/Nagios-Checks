@@ -227,13 +227,13 @@ checksum () {
           fi
 
           echo "file                  : ${file_path}"
-          echo "package_checksum      : ${package_checksum}"
+          echo "package_checksum (s)  : ${package_checksum}"
           echo "file_checksum_clean   : ${file_checksum_clean}"
           echo "file_checksum_prelink : ${file_checksum_prelink}"
 
           if [ "${package_checksum}" == "${file_checksum_clean}" ]; then
-            local file_checksum=${package_checksum_clean}
-          elif [ "${file_checksum}" == "${file_checksum_prelink}" ]; then
+            local file_checksum=${file_checksum_clean}
+          elif [ "${package_checksum}" == "${file_checksum_prelink}" ]; then
             local file_checksum=${file_checksum_prelink}
           else
             echo "WAT! package_checksum f... up"
