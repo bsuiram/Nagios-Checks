@@ -6,3 +6,4 @@
 /usr/bin/apt-get
 /usr/bin/dpkg
 /usr/bin/unzip
+/usr/bin/zipinfo
