@@ -210,6 +210,7 @@ checksum () {
           # This fails...
           local prelink_match="true"
           local file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
+          echo ${PIPESTATUS[@]}
           status=${?}
           # Debug:
           echo "file_checksum=\$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit \${PIPESTATUS[0]})"
