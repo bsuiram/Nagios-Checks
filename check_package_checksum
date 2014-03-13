@@ -191,23 +191,25 @@ checksum () {
       file_checksum=$(md5sum ${file_path} | awk '{print $1}')
       ;;
     rpm )
-      # Rhel (and clones) uses prelink, we have to use prelink -y to get correct checksums if enabled.
+      # Rhel (and clones) use prelink, we have to use prelink -y to get correct checksums if enabled.
       local package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
 
       if [ ${prelink_enabled} == "true" ]; then
         local in_prelink_cache=$(/usr/sbin/prelink -p | egrep "^${file_path}:|^${file_path} ")
         if [[ ${in_prelink_cache} =~ not.prelinkable ]]; then
-          #echo "dang... in_prelink_cache matches *not prelinkable*"
           local prelink_match="not prelinkable"
           file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
+
         elif [[ ${in_prelink_cache} =~ ^${file_path}:$ ]]; then
-          #echo "dang... file found in prelin cahce"
           local prelink_match="true"
-          file_checksum=$(prelink -y ${file_path} | ${pkgmgr_digest} | awk '{print $1}')
+          file_checksum=$(prelink -y ${file_path} 2>&/dev/null| ${pkgmgr_digest} | awk '{print $1}')
+          # If prelink fails, we need to catch output
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+           prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
+          fi
         else
           local prelink_match="false"
-          #echo "dang... file not found"
-          file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
+          file_checksum=$(${pkgmgr_digest} ${file_path} | awk '{print $1}')
         fi
       fi
       ;;
@@ -225,13 +227,16 @@ checksum () {
     echo "  File checksum         = ${file_checksum}"
     echo "  File in prelink cache = ${prelink_match}"
     echo "  In prelink cache      = ${in_prelink_cache}"
+    echo "  Prelink output        = ${prelink_status}"
     echo
   fi
 
-  if [ ${file_checksum} == ${package_checksum} ]; then
-    return 0
-  else
+  if [ ${file_checksum} != ${package_checksum} ]; then
     return 1
+  elif [ -n ${prelink_status} ]
+    return 2
+  else   
+    return 0
   fi
 }
 
@@ -241,15 +246,20 @@ do_checks () {
 
   local failed=0
   local verified=0
+  local prelink=0
 
   for file in ${checks[@]}; do
     get_package_name ${file}
     if [ $? -eq 0 ]; then
       checksum ${file} ${package_name}
-      if [ $? -ne 0 ]; then
+      if [ $? -eq 1 ]; then
         failed_files[${failed}]=${file}
         failed_packages[${failed}]=${package_name}
         failed=$((failed+1))
+      elif [ $? -eq 2 ]; then
+        failed_prelink_file[${prelink}]=${file}
+        failed_prelink_package[${prelink}]=${package_name}
+        prelink=$((prelink+1))
       else
         verified_files[${verified}]=${file}
         verified_packages[${verified}]=${package_name}
@@ -257,25 +267,38 @@ do_checks () {
       fi
     fi
   done
-
+  
   # Debug
+  if [ ${debug} == "true" ]; then
+    local prelink_count=0
+    echo
+    echo "Prelink has problems with these files:"
+    for i in ${failed_prelink_files[@]}; do 
+     echo "\"${failed_prelink_files[${prelink_count}]}\" in package \"${failed_prelink_packages[${prelink_count}]}\""
+    done
+    echo
+    echo "A fix might be to reinstall these packages, or run prelink manualy"
+    echo
+  fi
+
+  # Debug Verbose
   if [ ${debug_verbose} == "true" ]; then
     echo "function \"${FUNCNAME}\" - verbose debug:"
-    echo "  #failed              = ${failed}"
-    echo
+
+    echo "  #failed           = ${failed}"
     echo "  failed_files[@]   ="
     for i in ${failed_files[@]}; do
       echo "    ${i}"
     done
     echo
-    echo "  failed_packages[@]   ="
+    echo "  failed_packages[@] ="
     for i in ${failed_packages[@]}; do
       echo "    ${i}"
     done
     echo
-    echo "  #verified            = ${verified}"
-    echo
-    echo "  verified_files[@] ="
+  
+    echo "  #verified           = ${verified}"
+    echo "  verified_files[@]   ="
     for i in ${verified_files[@]}; do
       echo "    ${i}"
     done
@@ -285,6 +308,7 @@ do_checks () {
       echo "    ${i}"
     done
     echo
+
     echo " orhpaned_files[@] ="
     for i in ${orphaned_files[@]}; do
       echo "    ${i}"
@@ -309,6 +333,9 @@ output () {
     nagios_error=2
   elif [ ${#orphaned_files[@]} -ne "0" ]; then
     echo "WARNING: Trying to checksum orphaned files, run \"${0} -d\" for more info"
+    nagios_error=1
+  elif ${#failed_prelink_files[@]} -ne "0" ]; then
+    echo "WARNING: Prelink failed on some files, run \"${0} -d\" for more info. Reinstalling packag(es) might fixes this"
     nagios_error=1
   else
     echo "OK: All checked files match package managers checksums."
