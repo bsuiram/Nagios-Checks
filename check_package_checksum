@@ -230,9 +230,9 @@ checksum () {
           echo "file_checksum_prelink : ${file_checksum_prelink}"
 
 
-          if [ ${file_checksum} == ${package_checksum_clean} ]; then
+          if [ "${file_checksum}" == "${package_checksum_clean}" ]; then
             package_checksum=${package_checksum_clean}
-          elif [ ${file_checksum} == ${file_checksum_prelink} ]; then
+          elif [ "${file_checksum}" == "${file_checksum_prelink}" ]; then
             package_checksum=${file_checksum_prelink}
           else
             echo "WAT! package_checksum f... up"
@@ -258,7 +258,7 @@ checksum () {
     echo
   fi
 
-  if [ ${file_checksum} != ${package_checksum} ]; then
+  if [ "${file_checksum}" != "${package_checksum}" ]; then
     return 1
   elif [ -n ${prelink_status} ]; then
     return 2
