@@ -59,7 +59,7 @@ check_distro () {
       pkgmgr="dpkg"
       pkgmgr_digest="md5sum"
       ;;
-    RedHatEnterpriseServer|CentOS|Scientific )
+    RedHatEnterpriseServer|RedHatEnterpriseES|CentOS|Scientific )
       pkgmgr="rpm"
       if [ ${distro_majrelease} -le 5 ]; then
         pkgmgr_digest="md5sum"
