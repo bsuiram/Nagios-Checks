@@ -210,7 +210,7 @@ checksum () {
           # Debug off
           if [ ${status} -ne 0 ]; then
             prelink_status=$((prelink -y ${file_path} 1>/dev/null) 2>&1)
-           echo " dette skjer ikke?! right?"
+           echo "dette skjer ikke?! right?"
           fi
 
         else
@@ -260,11 +260,11 @@ checksum () {
     echo
   fi
 
-  if [ "${file_checksum}" != "${package_checksum}" ]; then
-    return 1
-  elif [ -n ${prelink_status} ]; then
+  if [ -n ${prelink_status} ]; then
     echo "OOOOooohhhh!"
     return 2
+  elif [ "${file_checksum}" != "${package_checksum}" ]; then
+    return 1
   else
     return 0
   fi
