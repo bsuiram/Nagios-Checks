@@ -292,19 +292,23 @@ do_checks () {
 
   # Debug
   if [ ${debug} == "true" ]; then
-    local prelink_count=0
-    echo
-    echo "Prelink has problems with these files:"
-    for i in ${failed_prelink_files[@]}; do
-     echo "\"${failed_prelink_files[${prelink_count}]}\" in package \"${failed_prelink_packages[${prelink_count}]}\""
-    done
+    if [ -n ${failed_prelink_files} ]; then
+      local prelink_count=0
+      echo
+      echo "Prelink has problems with these files:"
+      for i in ${failed_prelink_files[@]}; do
+       echo "  \"${failed_prelink_files[${prelink_count}]}\" in package \"${failed_prelink_packages[${prelink_count}]}\""
+       let prelink_count=prelink_count+1
+      done
 
-          # prelink -u ${file_path}
-          # prelink -f ${file_path}
-          # /usr/sbin/prelink -av -mR
-
-    echo "A fix might be to reinstall these packages, or run prelink manualy"
-    echo
+      echo "  A fix might be to reinstall these packages, or run prelink manualy:"
+      echo "    /usr/sbin/prelink -u ${file_path}"
+      echo "    /usr/sbin/prelink -f ${file_path}"
+      echo "  You might want to run:"
+      echo "    /usr/sbin/prelink -av -mR"
+      echo "  to re-prelink everything.."
+      echo
+    fi
   fi
 
   # Debug Verbose
