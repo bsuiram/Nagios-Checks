@@ -292,7 +292,7 @@ do_checks () {
 
   # Debug
   if [ ${debug} == "true" ]; then
-    if [ -n ${failed_prelink_files[0]} ]; then
+    if [ -n "${failed_prelink_files[0]}" ]; then
       local prelink_count=0
       echo
       echo "Prelink has problems with these files:"
