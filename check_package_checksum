@@ -220,10 +220,10 @@ checksum () {
           # /usr/sbin/prelink -av -mR
           file_checksum_clean=$(${pkgmgr_digest} ${file_path} | awk '{print $1}')
           file_checksum_prelink=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
-          #status=${?}
-          #if [ ${status} -ne 0 ]; then
-          # prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
-          #fi
+          status=${?}
+          if [ ${status} -ne 0 ]; then
+            prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
+          fi
           if [ ${file_checksum} == ${package_checksum_clean} ]; then
             package_checksum=${package_checksum_clean}
           elif [ ${file_checksum} == ${file_checksum_prelink} ]; then
