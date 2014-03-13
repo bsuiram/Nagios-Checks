@@ -303,6 +303,7 @@ do_checks () {
     local prelink_count=0
     echo
     echo "Prelink has problems with these files:"
+    echo "${failed_prelink_files[@]}"
     for i in ${failed_prelink_files[@]}; do
      echo "\"${failed_prelink_files[${prelink_count}]}\" in package \"${failed_prelink_packages[${prelink_count}]}\""
     done
