@@ -225,9 +225,9 @@ checksum () {
            prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
           fi
           if [ ${file_checksum} == ${package_checksum_clean} ]; then
-            file_checksum=${package_checksum_clean}
+            package_checksum=${package_checksum_clean}
           elif [ ${file_checksum} == ${file_checksum_prelink} ]; then
-            file_checksum=${file_checksum_prelink}
+            package_checksum=${file_checksum_prelink}
           fi
         fi
       fi
