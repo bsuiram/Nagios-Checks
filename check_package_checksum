@@ -365,7 +365,7 @@ output () {
     echo "WARNING: Trying to checksum orphaned files, run \"${0} -d\" for more info"
     nagios_error=1
   elif [ ${#failed_prelink_files[@]} -ne "0" ]; then
-    echo "WARNING: Prelink failed on some files, run \"${0} -d\" for more info. Reinstalling packag(es) might fixes this"
+    echo "WARNING: Prelink failed on some files, run \"${0} -d\" for more info. Reinstalling package(s) might fix this"
     nagios_error=1
   else
     echo "OK: All checked files match package managers checksums."
