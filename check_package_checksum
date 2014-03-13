@@ -233,9 +233,9 @@ checksum () {
 
   if [ ${file_checksum} != ${package_checksum} ]; then
     return 1
-  elif [ -n ${prelink_status} ]
+  elif [ -n ${prelink_status} ]; then
     return 2
-  else   
+  else
     return 0
   fi
 }
