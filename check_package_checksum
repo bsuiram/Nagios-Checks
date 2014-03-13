@@ -173,7 +173,7 @@ get_package_name () {
 }
 
 rpm_check_file_digest () {
-  #sjekker om prelink eksisterer og om filen ligger i prelink.cache 
+  #sjekker om prelink eksisterer og om filen ligger i prelink.cache
   # og om den gjøre det så sumer vi via prelink -y
   local file_path=${1}
 }
@@ -207,11 +207,11 @@ checksum () {
 
         elif [[ ${in_prelink_cache} =~ ^${file_path}:$ ]]; then
           local prelink_match="true"
-          file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}')
-          echo ${?}
+          file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
+          status=${?}
           echo " If prelink fails, we need to catch output"
-          echo "${PIPESTATUS[@]} PIPESTATUS"
-          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+          echo "$status PIPESTATUS"
+          if [ ${status} -ne 0 ]; then
            prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
            echo "${prelink_status} jess jess... blatti"
           fi
@@ -275,13 +275,13 @@ do_checks () {
       fi
     fi
   done
-  
+
   # Debug
   if [ ${debug} == "true" ]; then
     local prelink_count=0
     echo
     echo "Prelink has problems with these files:"
-    for i in ${failed_prelink_files[@]}; do 
+    for i in ${failed_prelink_files[@]}; do
      echo "\"${failed_prelink_files[${prelink_count}]}\" in package \"${failed_prelink_packages[${prelink_count}]}\""
     done
     echo
@@ -304,7 +304,7 @@ do_checks () {
       echo "    ${i}"
     done
     echo
-  
+
     echo "  #verified           = ${verified}"
     echo "  verified_files[@]   ="
     for i in ${verified_files[@]}; do
