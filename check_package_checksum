@@ -213,11 +213,9 @@ checksum () {
           status=${?}
           echo ${PIPESTATUS[@]}
           # Debug:
-          echo "file_checksum=\$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit \${PIPESTATUS[0]})"
-          echo "status = ${status} - ?? - prelink_match=true"
           # Debug off
           if [ ${status} -ne 0 ]; then
-           prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
+            prelink_status=$((prelink -y ${file_path} 1>/dev/null) 2>&1)
            echo " dette skjer ikke?! right?"
           fi
 
@@ -232,7 +230,7 @@ checksum () {
           status=${?}
           # echo " status = ${status}"
           if [ ${status} -ne 0 ]; then
-            prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
+            prelink_status=$((prelink -y ${file_path} 1>/dev/null) 2>&1)
           fi
 
           #echo "file                  : ${file_path}"
