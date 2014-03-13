@@ -302,8 +302,8 @@ do_checks () {
       done
 
       echo "  A fix might be to reinstall these packages, or run prelink manualy:"
-      echo "    /usr/sbin/prelink -u ${file_path}"
-      echo "    /usr/sbin/prelink -f ${file_path}"
+      echo "    /usr/sbin/prelink -u \${file_path}"
+      echo "    /usr/sbin/prelink -f \${file_path}"
       echo "  You might want to run:"
       echo "    /usr/sbin/prelink -av -mR"
       echo "  to re-prelink everything.."
