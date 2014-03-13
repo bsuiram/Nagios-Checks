@@ -209,7 +209,7 @@ checksum () {
         elif [[ ${in_prelink_cache} =~ ^${file_path}:$ ]]; then
           # This fails...
           local prelink_match="true"
-          local file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; echo ${PIPESTATUS[@]}; exit ${PIPESTATUS[0]})
+          local file_checksum=$((prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; echo ${PIPESTATUS[@]}; exit ${PIPESTATUS[0]}))
           status=${?}
           echo "file_checksum=\$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print \$1}'; echo \${PIPESTATUS[@]}; exit \${PIPESTATUS[0]})"
           echo "status = ${status} - ?? - prelink_match=true"
