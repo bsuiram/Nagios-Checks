@@ -228,6 +228,8 @@ checksum () {
             package_checksum=${package_checksum_clean}
           elif [ ${file_checksum} == ${file_checksum_prelink} ]; then
             package_checksum=${file_checksum_prelink}
+          else
+            echo "WAT! package_checksum f... up"
           fi
         fi
       fi
