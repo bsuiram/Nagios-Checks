@@ -210,7 +210,7 @@ checksum () {
           file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
           status=${?}
           echo " If prelink fails, we need to catch output"
-          echo "$status PIPESTATUS"
+          echo "$status PIPESTATUS ${files_path}"
           if [ ${status} -ne 0 ]; then
            prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
            echo "${prelink_status} jess jess... blatti"
