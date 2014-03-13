@@ -41,7 +41,6 @@ while getopts dvhf: option; do
         checks[${line}]=$i # needs sanity check..
         line=$((line+1))
       done
-      echo ${checks[@]}
       ;;
     h|* )
       usage
@@ -165,7 +164,8 @@ get_package_name () {
    fi
 
    if [ ${package_name} == "orphaned" ]; then
-     orphaned_files+=( ${file} )
+     #orphaned_files+=( ${file} )
+     orphaned_files=("${orphaned_files[@]}" "${file}")
      return 1
    else
      return 0
@@ -215,8 +215,9 @@ checksum () {
 
         else
           local prelink_match="false"
-          prelink -u ${file_path}
-          prelink -f ${file_path}
+          # prelink -u ${file_path}
+          # prelink -f ${file_path}
+          # /usr/sbin/prelink -av -mR
           file_checksum=$(${pkgmgr_digest} ${file_path} | awk '{print $1}')
         fi
       fi
