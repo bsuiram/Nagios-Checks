@@ -39,7 +39,7 @@ while getopts dvhf: option; do
       line=0
       for lines in $(cat ${check_file}); do
         checks[${line}]=$(cat ${check_file}) # needs sanity check..
-        line=((line+1))
+        line=$((line+1))
       done
       ;;
     h|* )
