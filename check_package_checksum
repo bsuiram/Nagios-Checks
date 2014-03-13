@@ -208,7 +208,8 @@ checksum () {
         elif [[ ${in_prelink_cache} =~ ^${file_path}:$ ]]; then
           local prelink_match="true"
           file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}')
-          # If prelink fails, we need to catch output
+          echo ${?}
+          echo " If prelink fails, we need to catch output"
           echo "${PIPESTATUS[@]} PIPESTATUS"
           if [ ${PIPESTATUS[0]} -ne 0 ]; then
            prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
