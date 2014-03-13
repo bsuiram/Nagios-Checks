@@ -212,7 +212,7 @@ checksum () {
           local file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
           status=${?}
           # Debug:
-          echo "file_checksum=\$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print \$1}'; exit \${PIPESTATUS[0]})"
+          echo "file_checksum=\$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit \${PIPESTATUS[0]})"
           echo "status = ${status} - ?? - prelink_match=true"
           # Debug off
           if [ ${status} -ne 0 ]; then
