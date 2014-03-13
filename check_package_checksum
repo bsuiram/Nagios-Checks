@@ -225,16 +225,16 @@ checksum () {
           if [ ${status} -ne 0 ]; then
             local prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
           fi
+
           echo "file                  : ${file_path}"
-          echo "file_checksum         : ${file_checksum}"
+          echo "package_checksum      : ${package_checksum}"
           echo "file_checksum_clean   : ${file_checksum_clean}"
           echo "file_checksum_prelink : ${file_checksum_prelink}"
 
-
-          if [ "${file_checksum}" == "${package_checksum_clean}" ]; then
-            local package_checksum=${package_checksum_clean}
+          if [ "${package_checksum}" == "${file_checksum_clean}" ]; then
+            local file_checksum=${package_checksum_clean}
           elif [ "${file_checksum}" == "${file_checksum_prelink}" ]; then
-            local package_checksum=${file_checksum_prelink}
+            local file_checksum=${file_checksum_prelink}
           else
             echo "WAT! package_checksum f... up"
           fi
