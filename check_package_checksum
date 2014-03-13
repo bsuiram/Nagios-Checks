@@ -280,13 +280,15 @@ do_checks () {
 
   for file in ${checks[@]}; do
     get_package_name ${file}
-    if [ $? -eq 0 ]; then
+    retval=${?}
+    if [ ${retval}  -eq 0 ]; then
       checksum ${file} ${package_name}
-      if [ $? -eq 1 ]; then
+      retval2=${?}
+      if [ ${retval2} -eq 1 ]; then
         failed_files[${failed}]=${file}
         failed_packages[${failed}]=${package_name}
         failed=$((failed+1))
-      elif [ $? -eq 2 ]; then
+      elif [ ${retval2} -eq 2 ]; then
         failed_prelink_files[${prelink}]=${file}
         failed_prelink_packages[${prelink}]=${package_name}
         prelink=$((prelink+1))
