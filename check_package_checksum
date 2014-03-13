@@ -191,24 +191,24 @@ checksum () {
     dpkg )
       # Remove first char from path (/)
       # as ${package_name}.md5sums contains path without starting /
-      local file_path_mod=${file_path:1:${#file_path}}
-      local package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${file_path_mod}$" | awk '{print $1}')
-      local file_checksum=$(md5sum ${file_path} | awk '{print $1}')
+      file_path_mod=${file_path:1:${#file_path}}
+      package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${file_path_mod}$" | awk '{print $1}')
+      file_checksum=$(md5sum ${file_path} | awk '{print $1}')
       ;;
     rpm )
       # Rhel (and clones) use prelink, we have to use prelink -y to get correct checksums if enabled.
-      local package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
+      package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
 
       if [ ${prelink_enabled} == "true" ]; then
         # This works
-        local in_prelink_cache=$(prelink -p | egrep "^${file_path}:|^${file_path} ")
+        in_prelink_cache=$(prelink -p | egrep "^${file_path}:|^${file_path} ")
         if [[ ${in_prelink_cache} =~ not.prelinkable ]]; then
-          local prelink_match="not prelinkable"
-          local file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
+          prelink_match="not prelinkable"
+          file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
 
         elif [[ ${in_prelink_cache} =~ ^${file_path}:$ ]]; then
           # This fails...
-          local prelink_match="true"
+          prelink_match="true"
           file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
           status=${?}
           echo ${PIPESTATUS[@]}
@@ -223,16 +223,16 @@ checksum () {
 
         else
           # This works!
-          local prelink_match="false"
+          prelink_match="false"
           # prelink -u ${file_path}
           # prelink -f ${file_path}
           # /usr/sbin/prelink -av -mR
-          local file_checksum_clean=$(${pkgmgr_digest} ${file_path} | awk '{print $1}')
-          local file_checksum_prelink=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
-          local status=${?}
+          file_checksum_clean=$(${pkgmgr_digest} ${file_path} | awk '{print $1}')
+          file_checksum_prelink=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
+          status=${?}
           # echo " status = ${status}"
           if [ ${status} -ne 0 ]; then
-            local prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
+            prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
           fi
 
           #echo "file                  : ${file_path}"
@@ -241,9 +241,9 @@ checksum () {
           #echo "file_checksum_prelink : ${file_checksum_prelink}"
 
           if [ "${package_checksum}" == "${file_checksum_clean}" ]; then
-            local file_checksum=${file_checksum_clean}
+            file_checksum=${file_checksum_clean}
           elif [ "${package_checksum}" == "${file_checksum_prelink}" ]; then
-            local file_checksum=${file_checksum_prelink}
+            file_checksum=${file_checksum_prelink}
           else
             echo "WAT! package_checksum f... up"
           fi
