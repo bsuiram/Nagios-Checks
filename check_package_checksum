@@ -37,8 +37,8 @@ while getopts dvhf: option; do
       check_file=${OPTARG}
       unset checks
       line=0
-      for lines in $(cat ${check_file}); do
-        checks[${line}]=$(cat ${check_file}) # needs sanity check..
+      for i in $(cat ${check_file}); do
+        checks[${line}]=$i # needs sanity check..
         line=$((line+1))
       done
       echo ${checks[@]}
