@@ -287,8 +287,8 @@ do_checks () {
         failed_packages[${failed}]=${package_name}
         failed=$((failed+1))
       elif [ $? -eq 2 ]; then
-        failed_prelink_file[${prelink}]=${file}
-        failed_prelink_package[${prelink}]=${package_name}
+        failed_prelink_files[${prelink}]=${file}
+        failed_prelink_packages[${prelink}]=${package_name}
         prelink=$((prelink+1))
       else
         verified_files[${verified}]=${file}
