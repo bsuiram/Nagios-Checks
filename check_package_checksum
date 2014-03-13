@@ -195,7 +195,7 @@ checksum () {
       local package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
 
       if [ ${prelink_enabled} == "true" ]; then
-        local in_prelink_cache=$(prelink -p | egrep "^${file_path}:|^${file_path} ")
+        local in_prelink_cache=$(/usr/sbin/prelink -p | egrep "^${file_path}:|^${file_path} ")
         if [[ ${in_prelink_cache} =~ not.prelinkable ]]; then
           #echo "dang... in_prelink_cache matches *not prelinkable*"
           local prelink_match="not prelinkable"
