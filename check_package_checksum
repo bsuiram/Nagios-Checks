@@ -211,6 +211,7 @@ checksum () {
           # If prelink fails, we need to catch output
           if [ ${PIPESTATUS[0]} -ne 0 ]; then
            prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
+           echo "${prelink_status} jess jess... blatti"
           fi
         else
           local prelink_match="false"
