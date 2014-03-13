@@ -290,11 +290,11 @@ do_checks () {
         failed_prelink_files[${prelink}]=${file}
         failed_prelink_packages[${prelink}]=${package_name}
         prelink=$((prelink+1))
-      else
-        verified_files[${verified}]=${file}
-        verified_packages[${verified}]=${package_name}
-        verified=$((verified+1))
       fi
+    else
+      verified_files[${verified}]=${file}
+      verified_packages[${verified}]=${package_name}
+      verified=$((verified+1))
     fi
   done
 
