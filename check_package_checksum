@@ -200,7 +200,7 @@ checksum () {
       local package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
 
       if [ ${prelink_enabled} == "true" ]; then
-        local in_prelink_cache=$(/usr/sbin/prelink -p | egrep "^${file_path}:|^${file_path} ")
+        local in_prelink_cache=$(prelink -p | egrep "^${file_path}:|^${file_path} ")
         if [[ ${in_prelink_cache} =~ not.prelinkable ]]; then
           local prelink_match="not prelinkable"
           file_checksum=$( ${pkgmgr_digest} ${file_path} | awk '{print $1}')
@@ -209,14 +209,14 @@ checksum () {
           local prelink_match="true"
           file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
           status=${?}
-          echo " If prelink fails, we need to catch output"
-          echo "$status PIPESTATUS ${file_path}"
           if [ ${status} -ne 0 ]; then
            prelink_status=$(prelink -y ${file_path} 1>/dev/null 2>&1)
-           echo "${prelink_status} jess jess... blatti"
           fi
+
         else
           local prelink_match="false"
+          prelink -u ${file_path}
+          prelink -f ${file_path}
           file_checksum=$(${pkgmgr_digest} ${file_path} | awk '{print $1}')
         fi
       fi
