@@ -172,12 +172,6 @@ get_package_name () {
    fi
 }
 
-rpm_check_file_digest () {
-  #sjekker om prelink eksisterer og om filen ligger i prelink.cache
-  # og om den gjøre det så sumer vi via prelink -y
-  local file_path=${1}
-}
-
 checksum () {
   # Takes 2 arguments;
   #  1) path from pseudo_file_name array element
@@ -250,7 +244,7 @@ checksum () {
       ;;
     * )
       echo "Wat?! function \"${FUNCNAME}\" failed, \${pkgmgr} not known."
-      exit 2
+      exit 512
       ;;
   esac
 
@@ -269,6 +263,7 @@ checksum () {
   if [ "${file_checksum}" != "${package_checksum}" ]; then
     return 1
   elif [ -n ${prelink_status} ]; then
+    echo "OOOOooohhhh!"
     return 2
   else
     return 0
