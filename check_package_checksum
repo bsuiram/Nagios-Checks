@@ -280,23 +280,23 @@ do_checks () {
 
   for file in ${checks[@]}; do
     get_package_name ${file}
-    retval=${?}
+    local retval=${?}
     if [ ${retval}  -eq 0 ]; then
       checksum ${file} ${package_name}
-      retval2=${?}
-      if [ ${retval2} -eq 1 ]; then
+      retval=${?}
+      if [ ${retval} -eq 1 ]; then
         failed_files[${failed}]=${file}
         failed_packages[${failed}]=${package_name}
         failed=$((failed+1))
-      elif [ ${retval2} -eq 2 ]; then
+      elif [ ${retval} -eq 2 ]; then
         failed_prelink_files[${prelink}]=${file}
         failed_prelink_packages[${prelink}]=${package_name}
         prelink=$((prelink+1))
+      else
+        verified_files[${verified}]=${file}
+        verified_packages[${verified}]=${package_name}
+        verified=$((verified+1))
       fi
-    else
-      verified_files[${verified}]=${file}
-      verified_packages[${verified}]=${package_name}
-      verified=$((verified+1))
     fi
   done
 
