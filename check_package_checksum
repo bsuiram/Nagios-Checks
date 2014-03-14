@@ -204,7 +204,6 @@ checksum () {
       local package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
       local in_prelink_cache="NA"
       local prelink_match="NA"
-      local prelink_status="NA"
 
       if [ ${prelink_enabled} == "true" ]; then
         # This works
@@ -219,7 +218,7 @@ checksum () {
           # if file_checksum fails, we need to catch output from prelink.
           status=${?}
           if [ ${status} -ne 0 ]; then
-            prelink_status=$((prelink -y ${file_path} 1>/dev/null) 2>&1)
+            local prelink_status=$((prelink -y ${file_path} 1>/dev/null) 2>&1)
           fi
 
         else
@@ -230,7 +229,7 @@ checksum () {
           # if ${file_checksum_prelink} fails, we need to catch output
           status=${?}
           if [ ${status} -ne 0 ]; then
-            prelink_status=$((prelink -y ${file_path} 1>/dev/null) 2>&1)
+            local prelink_status=$((prelink -y ${file_path} 1>/dev/null) 2>&1)
           fi
           # if package_checksum matches clean or prelink checksum, we dont care and assume its ok.
           if [ "${package_checksum}" == "${file_checksum_clean}" ]; then
