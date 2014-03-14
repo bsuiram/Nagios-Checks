@@ -195,13 +195,15 @@ checksum () {
     dpkg )
       # Remove first char from path (/)
       # as ${package_name}.md5sums contains path without starting /
-      file_path_mod=${file_path:1:${#file_path}}
-      package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${file_path_mod}$" | awk '{print $1}')
-      file_checksum=$(md5sum ${file_path} | awk '{print $1}')
+      local file_path_mod=${file_path:1:${#file_path}}
+      local package_checksum=$(cat /var/lib/dpkg/info/${package_name}.md5sums | egrep "${file_path_mod}$" | awk '{print $1}')
+      local file_checksum=$(md5sum ${file_path} | awk '{print $1}')
       ;;
     rpm )
       # Rhel (and clones) use prelink, we have to use prelink -y to get correct checksums if enabled.
-      package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
+      local package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
+      local in_prelink_cache="NA"
+      local prelink_match="NA"
 
       if [ ${prelink_enabled} == "true" ]; then
         # This works
