@@ -23,11 +23,12 @@ usage () {
       -v : verbose (implies -d)
       -f <file>: list of files to check
       -p : print info about prelink issues
+      -o : print info about orphaned files
       -h : Prints this list
 EOF
 }
 
-while getopts dvhf: option; do
+while getopts dvhpof: option; do
   case ${option} in
     d )
       debug="true"
