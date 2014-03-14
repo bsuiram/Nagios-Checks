@@ -313,6 +313,8 @@ do_checks () {
       echo
       echo "  To re-prelink everything you can run:"
       echo "    /usr/sbin/prelink -av -mR"
+      echo "  Reinstalling package might also resolve this issue:"
+      echo "    yum reinstall \${package}"
       echo
     fi
   fi
