@@ -10,16 +10,19 @@ checks=( \
 # Debug true/false
 debug="false"
 debug_verbose="false"
+prelink_info="false"
+orphaned_info="false"
 
 usage () {
   cat << EOF
   ${0} checks checksums for files against local package database
-  Usage: ${0} [-dvh] -p <file>
+  Usage: ${0} [-dvhp] -f <file>
 
     Options:
       -d : debug
       -v : verbose (implies -d)
       -f <file>: list of files to check
+      -p : print info about prelink issues
       -h : Prints this list
 EOF
 }
@@ -41,6 +44,12 @@ while getopts dvhf: option; do
         checks[${line}]=$i # needs sanity check..
         line=$((line+1))
       done
+      ;;
+    p )
+      prelink_info="true"
+      ;;
+    o )
+      orphaned_info="true"
       ;;
     h|* )
       usage
@@ -203,32 +212,27 @@ checksum () {
         elif [[ ${in_prelink_cache} =~ ^${file_path}:$ ]]; then
           prelink_match="true"
           file_checksum=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
+          # if file_checksum fails, we need to catch output from prelink.
           status=${?}
           if [ ${status} -ne 0 ]; then
             prelink_status=$((prelink -y ${file_path} 1>/dev/null) 2>&1)
           fi
 
         else
-          # This works!
           prelink_match="false"
           file_checksum_clean=$(${pkgmgr_digest} ${file_path} | awk '{print $1}')
           file_checksum_prelink=$(prelink -y ${file_path} 2>/dev/null | ${pkgmgr_digest} | awk '{print $1}'; exit ${PIPESTATUS[0]})
+
+          # if ${file_checksum_prelink} fails, we need to catch output
           status=${?}
           if [ ${status} -ne 0 ]; then
             prelink_status=$((prelink -y ${file_path} 1>/dev/null) 2>&1)
           fi
-
-          #echo "file                  : ${file_path}"
-          #echo "package_checksum (s)  : ${package_checksum}"
-          #echo "file_checksum_clean   : ${file_checksum_clean}"
-          #echo "file_checksum_prelink : ${file_checksum_prelink}"
-
+          # if package_checksum matches clean or prelink checksum, we dont care and assume its ok.
           if [ "${package_checksum}" == "${file_checksum_clean}" ]; then
             file_checksum=${file_checksum_clean}
           elif [ "${package_checksum}" == "${file_checksum_prelink}" ]; then
             file_checksum=${file_checksum_prelink}
-          else
-            echo "WAT! package_checksum f... up"
           fi
         fi
       fi
@@ -290,24 +294,24 @@ do_checks () {
     fi
   done
 
-  # Debug
-  if [ ${debug} == "true" ]; then
+  # Prelink info
+  if [ ${prelink_info} == "true" ]; then
     if [ -n "${failed_prelink_files[0]}" ]; then
       local prelink_count=0
+      local prelink_path=$(which prelink)
       echo
       echo "Prelink has problems with these files:"
       for i in ${failed_prelink_files[@]}; do
-       echo "  \"${failed_prelink_files[${prelink_count}]}\" in package \"${failed_prelink_packages[${prelink_count}]}\""
-       let prelink_count=prelink_count+1
+        echo "  \"${failed_prelink_files[${prelink_count}]}\" in package \"${failed_prelink_packages[${prelink_count}]}\""
+        let prelink_count=prelink_count+1
       done
-
       echo
-      echo "  A fix might be to reinstall these packages, or run prelink manualy:"
-      echo "    /usr/sbin/prelink -u \${file_path}"
-      echo "    /usr/sbin/prelink -f \${file_path}"
-      echo "  You might want to run:"
+      echo "  A fix might be to reinstall these packages affected, or run prelink manualy:"
+      echo "    ${prelink_path} -u \${file_path}"
+      echo "    ${prelink_path} -f \${file_path}"
+      echo
+      echo "  To re-prelink everything you can run:"
       echo "    /usr/sbin/prelink -av -mR"
-      echo "  to re-prelink everything.."
       echo
     fi
   fi
@@ -339,8 +343,10 @@ do_checks () {
       echo "    ${i}"
     done
     echo
+  fi
 
-    echo " orhpaned_files[@] ="
+  if [ ${debug_verbose} == "true" -o ${orphaned_info} == "true"  ]; then
+    echo "  orhpaned_files[@] ="
     for i in ${orphaned_files[@]}; do
       echo "    ${i}"
     done
@@ -358,15 +364,15 @@ output () {
   if [ ${#failed_files[@]} -ne "0" ]; then
     echo "CRITICAL: File(s) did not match package checksum! Run \"${0} -d\" to investigate."
     for i in ${failed_files[@]}; do
-        echo "${failed_files[${count}]} does not match ${failed_packages[${count}]}"
-        let count=count+1
+      echo "${failed_files[${count}]} does not match ${failed_packages[${count}]}"
+      let count=count+1
     done
     nagios_error=2
   elif [ ${#orphaned_files[@]} -ne "0" ]; then
     echo "WARNING: Trying to checksum orphaned files, run \"${0} -d\" for more info"
     nagios_error=1
   elif [ ${#failed_prelink_files[@]} -ne "0" ]; then
-    echo "WARNING: Prelink failed on some files, run \"${0} -d\" for more info. Reinstalling package(s) might fix this"
+    echo "WARNING: Prelink failed on some files, run \"${0} -p\" for more info."
     nagios_error=1
   else
     echo "OK: All checked files match package managers checksums."
