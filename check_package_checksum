@@ -261,6 +261,7 @@ checksum () {
   if [ -n "${prelink_status}" ]; then
     return 2
   elif [ "${file_checksum}" != "${package_checksum}" ]; then
+    echo ${file_path}
     return 1
   else
     return 0
