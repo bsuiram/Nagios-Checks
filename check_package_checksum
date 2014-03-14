@@ -204,6 +204,7 @@ checksum () {
       local package_checksum=$(rpm -ql --dump ${package_name} | egrep "^${file_path} " | awk '{print $4}')
       local in_prelink_cache="NA"
       local prelink_match="NA"
+      local prelink_status="NA"
 
       if [ ${prelink_enabled} == "true" ]; then
         # This works
