@@ -233,8 +233,10 @@ checksum () {
           fi
           # if package_checksum matches clean or prelink checksum, we dont care and assume its ok.
           if [ "${package_checksum}" == "${file_checksum_clean}" ]; then
+            unset prelink_status
             file_checksum=${file_checksum_clean}
           elif [ "${package_checksum}" == "${file_checksum_prelink}" ]; then
+            unset prelink_status
             file_checksum=${file_checksum_prelink}
           fi
         fi
